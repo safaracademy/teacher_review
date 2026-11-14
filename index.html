@@ -1,0 +1,618 @@
+<title>Safar Teacher Review</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800&family=Source+Sans+3:wght@400;600;700&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+/* Layout: one phone-first column of numbered form sections, sticky stage switcher at top, fixed action bar at bottom. Matches the Safar cleaning log. */
+:root{
+  --bg:#f3f5f4; --surface:#ffffff; --sunk:#e8ecea; --line:#d3dad7;
+  --ink:#16201d; --muted:#5b6964; --accent:#11695a; --accent-ink:#ffffff; --accent-soft:#dcefe9;
+  --good:#1f7a43; --good-soft:#e1f2e6; --warn:#a26300; --warn-soft:#fbefd9; --bad:#b3261e; --bad-soft:#fbe3e1;
+  --paper:#ffffff;
+  --f-display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --f-body:"Source Sans 3","Segoe UI",Roboto,sans-serif;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1513; --surface:#18201d; --sunk:#111816; --line:#2c3833;
+  --ink:#e6ece9; --muted:#9aa8a2; --accent:#4cc3a6; --accent-ink:#06231c; --accent-soft:#163a31;
+  --good:#5fcf8a; --good-soft:#15301f; --warn:#f0b54d; --warn-soft:#352812; --bad:#ff8a80; --bad-soft:#3a1816;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1513; --surface:#18201d; --sunk:#111816; --line:#2c3833;
+  --ink:#e6ece9; --muted:#9aa8a2; --accent:#4cc3a6; --accent-ink:#06231c; --accent-soft:#163a31;
+  --good:#5fcf8a; --good-soft:#15301f; --warn:#f0b54d; --warn-soft:#352812; --bad:#ff8a80; --bad-soft:#3a1816;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.45}
+.wrap{max-width:760px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 130px;display:grid;gap:18px}
+h1,h2,h3{font-family:var(--f-display);margin:0;text-wrap:balance;letter-spacing:-.01em}
+h1{font-size:1.7rem;font-weight:800}
+h2{font-size:1.12rem;font-weight:800;display:flex;gap:10px;align-items:baseline}
+h2 .n{font-size:.8rem;color:var(--accent);font-weight:600}
+h3{font-size:1rem;font-weight:600}
+p{margin:0}
+.muted{color:var(--muted)}
+.small{font-size:.86rem}
+header.top{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.logo{background:#fff;border-radius:8px;padding:6px 10px;display:flex;align-items:center;border:1px solid var(--line)}
+.logo img{height:34px;width:auto;display:block}
+.wordmark{font-family:var(--f-display);font-weight:800;color:#11695a;font-size:1rem}
+.titles{display:grid;gap:2px;min-width:0;flex:1}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:grid;gap:14px;min-width:0}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+label.f{display:grid;gap:4px;font-weight:600;font-size:.9rem;min-width:0}
+label.f .h{font-weight:400;color:var(--muted);font-size:.82rem}
+input[type=text],input[type=date],input[type=number],textarea,select{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;width:100%;min-width:0}
+textarea{min-height:76px;resize:vertical}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:9px 14px;font-weight:600}
+button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+button.ghost{background:transparent}
+button.sm{padding:6px 10px;font-size:.85rem}
+button:disabled{opacity:.55;cursor:default}
+.stages{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:8px;position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:8px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.stage{display:grid;gap:1px;text-align:left;padding:9px 10px;border-radius:var(--r);background:var(--surface)}
+.stage b{font-family:var(--f-display);font-size:.92rem}
+.stage small{color:var(--muted);font-weight:400;font-size:.76rem}
+.stage[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent)}
+input[type=email]{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;width:100%;min-width:0}
+.mailSteps{margin:0;padding-left:20px;display:grid;gap:4px;font-size:.92rem}
+.btnlink{display:inline-flex;align-items:center;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:6px 10px;font-size:.85rem;font-weight:600;text-decoration:none}
+#mailBody{min-height:300px;font-size:.95rem}
+.law{background:var(--warn-soft);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;font-size:.92rem}
+.law summary{cursor:pointer;font-weight:700;color:var(--warn)}
+.law ul{margin:8px 0 0;padding-left:20px;display:grid;gap:4px}
+.area{border-top:1px solid var(--line);padding-top:14px;display:grid;gap:10px}
+.area:first-of-type{border-top:0;padding-top:0}
+.areaHead{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.areaHead h3{flex:1;min-width:0}
+.pill{font-size:.75rem;font-weight:700;padding:3px 9px;border-radius:99px;background:var(--sunk);color:var(--muted);white-space:nowrap}
+.pill.good{background:var(--good-soft);color:var(--good)} .pill.warn{background:var(--warn-soft);color:var(--warn)} .pill.bad{background:var(--bad-soft);color:var(--bad)}
+.check{display:grid;gap:6px;padding:10px 12px;background:var(--bg);border-radius:8px}
+.check p{font-size:.95rem}
+.check .src{font-size:.76rem;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{position:relative}
+.chip input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.chip span{display:inline-block;padding:6px 11px;border-radius:99px;border:1px solid var(--line);font-size:.84rem;font-weight:600;background:var(--surface)}
+.chip input:focus-visible + span{outline:2px solid var(--accent);outline-offset:2px}
+.chip input:checked + span.good{background:var(--good-soft);color:var(--good);border-color:var(--good)}
+.chip input:checked + span.warn{background:var(--warn-soft);color:var(--warn);border-color:var(--warn)}
+.chip input:checked + span.bad{background:var(--bad-soft);color:var(--bad);border-color:var(--bad)}
+.chip input:checked + span.na{background:var(--sunk);color:var(--ink);border-color:var(--muted)}
+.scoreboard{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.score{background:var(--bg);border-radius:8px;padding:10px 12px;display:grid;gap:2px}
+.score b{font-family:var(--f-display);font-size:1.3rem;font-variant-numeric:tabular-nums}
+.score span{font-size:.8rem;color:var(--muted)}
+.obj{display:grid;gap:8px;padding:12px;background:var(--bg);border-radius:8px}
+.objTop{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.outcomes{display:grid;gap:8px}
+.oc{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);cursor:pointer}
+.oc input{margin-top:4px;accent-color:var(--accent);width:18px;height:18px;flex:none}
+.oc:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.sig{background:var(--paper);border:1px solid var(--line);border-radius:8px;height:140px;touch-action:none;width:100%;display:block}
+.sigRow{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);padding-top:10px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));z-index:10}
+.barIn{max-width:760px;margin:0 auto;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.status{flex:1;min-width:170px;font-size:.85rem;color:var(--muted)}
+.status.err{color:var(--bad)} .status.ok{color:var(--good)}
+@media (prefers-reduced-motion:no-preference){.stage,.chip span,button,.oc{transition:background .15s,border-color .15s}}
+.combo{position:relative;min-width:0}
+.combo ul{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:20;margin:0;padding:4px;list-style:none;background:var(--surface);border:1px solid var(--line);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.14);max-height:260px;overflow-y:auto}
+.combo li{display:grid;gap:1px;padding:8px 10px;border-radius:6px;cursor:pointer;font-weight:400}
+.combo li b{font-weight:600;font-size:.95rem}
+.combo li small{color:var(--muted);font-size:.78rem}
+.combo li mark{background:var(--accent-soft);color:inherit;border-radius:2px}
+.combo li[aria-selected="true"]{background:var(--accent-soft)}
+.combo li.none{cursor:default;color:var(--muted);font-size:.85rem}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="logo" id="logoBox"><img id="logoImg" src="logo.png" alt="Safar Academy"><span class="wordmark" id="wordmark" hidden>Safar Academy</span></div>
+    <div class="titles">
+      <h1 id="pageTitle">Teacher Probation Review</h1>
+      <p class="muted small">Measured against Safar's teaching standards: teacher training, the Code of Conduct, the Behaviour Policy and the Admin Handbook. Fill it in during the meeting, sign on screen, then download the PDF for the employee.</p>
+    </div>
+  </header>
+
+  <nav class="stages" id="stages" aria-label="Review stage"></nav>
+
+  <details class="law" id="lawBox">
+    <summary>UK rules to keep in mind</summary>
+    <ul>
+      <li>Probation is reviewed at <b>week 12</b> of the 40-week year. Weeks count term time, but the legal clock runs on calendar months, holidays included.</li>
+      <li>From <b>1 January 2027</b>, staff can claim unfair dismissal after <b>6 months'</b> service (currently 2 years). Make the probation decision, including any extension, before the 6-month date shown in section 1.</li>
+      <li>Extending probation does not delay that protection. After 6 months, a dismissal needs a fair reason and a fair process.</li>
+      <li>Discrimination and whistleblowing protection apply from day one. Rate on evidence only.</li>
+      <li>Raise concerns early, in writing, with support and a fair chance to improve. Consider reasonable adjustments for a disability.</li>
+      <li>Do not count absence linked to disability, pregnancy or family leave against the employee.</li>
+    </ul>
+  </details>
+
+  <section class="panel" aria-labelledby="h1d">
+    <h2 id="h1d"><span class="n">1</span>Employee and review details</h2>
+    <div class="grid2">
+      <label class="f">Review type<span class="h">Probation for new starters, termly for everyone else</span><select id="kind"><option value="probation">Probation review</option><option value="performance">Termly performance review</option></select></label>
+      <label class="f">Job title<span class="h">e.g. Teacher, Memorisation Teacher</span><input type="text" id="role" autocomplete="off"></label>
+      <label class="f">Employee name<span class="h">Start typing to pick from the Staff Database</span><div class="combo"><input type="text" id="empName" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="empName-list"><ul id="empName-list" role="listbox" hidden></ul></div></label>
+      <label class="f">Branch<select id="branch"><option value="">Choose branch</option><option>Edmonton</option><option>Enfield</option><option>Finchley</option><option>Harlow</option><option>Slough</option></select></label>
+      <label class="f">Reviewer<span class="h">Head, Deputy Head or Executive Head. Start typing to pick a name</span><div class="combo"><input type="text" id="reviewer" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="reviewer-list"><ul id="reviewer-list" role="listbox" hidden></ul></div></label>
+      <label class="f">Start date<input type="date" id="startDate"></label>
+      <label class="f" id="endWrap">Probation end date<span class="h" id="endHint">Set the start date to fill this in</span><input type="date" id="endDate"></label>
+      <label class="f">Date of this review<input type="date" id="reviewDate"></label>
+      <label class="f">Lesson observed on<span class="h">Date of the observation this review draws on</span><input type="date" id="obsDate"></label>
+      <label class="f">Others present<span class="h">e.g. Deputy, Executive Head, companion</span><input type="text" id="present"></label>
+    </div>
+    <p class="small" id="sixMonth"></p>
+  </section>
+
+  <section class="panel" aria-labelledby="h2d">
+    <h2 id="h2d"><span class="n">2</span>Teaching standards</h2>
+    <p class="small" id="roleLabel" style="font-weight:600"></p>
+    <p class="muted small">Rate each standard from what you have seen. Use "Not yet seen" if you haven't had the chance to see it yet, and "N/A" if it doesn't apply to this teacher's class or branch. Neither counts towards the score. Anything "Partly" or "Not met" needs a note and an objective in section 4.</p>
+    <div id="areas" style="display:grid;gap:18px"></div>
+  </section>
+
+  <section class="panel" aria-labelledby="h3d">
+    <h2 id="h3d"><span class="n">3</span>Attendance, timekeeping and conduct</h2>
+    <div class="grid2">
+      <label class="f">Days absent since start<input type="number" min="0" step="0.5" id="absDays" inputmode="decimal"></label>
+      <label class="f">Times late or signed in late<input type="number" min="0" id="lateCount" inputmode="numeric"></label>
+    </div>
+    <div id="conduct" style="display:grid;gap:10px"></div>
+    <label class="f">Notes<textarea id="conductNotes" placeholder="Dates and facts only"></textarea></label>
+  </section>
+
+  <section class="panel" aria-labelledby="h4d">
+    <h2 id="h4d"><span class="n">4</span>Objectives and support</h2>
+    <p class="muted small">Specific and measurable, each with a date. At the next review, record progress.</p>
+    <div id="objs" style="display:grid;gap:10px"></div>
+    <div><button type="button" id="addObj">Add objective</button></div>
+    <label class="f">Training completed so far<span class="h">INSET days, Flick Learning modules, Safar Online training</span><textarea id="training"></textarea></label>
+    <label class="f">Support or adjustments needed<textarea id="support"></textarea></label>
+  </section>
+
+  <section class="panel" aria-labelledby="h5d">
+    <h2 id="h5d"><span class="n">5</span>Summary</h2>
+    <div class="scoreboard" id="scores"></div>
+    <label class="f">Key strengths<textarea id="strengths"></textarea></label>
+    <label class="f">Areas to improve<textarea id="improve"></textarea></label>
+    <label class="f">Employee's comments<span class="h">In their own words: how they feel it is going, and any support they want</span><textarea id="empComments"></textarea></label>
+  </section>
+
+  <section class="panel" aria-labelledby="h6d">
+    <h2 id="h6d"><span class="n">6</span>Outcome</h2>
+    <div class="outcomes" id="outcomes"></div>
+    <div id="extendBox" class="grid2" hidden>
+      <label class="f">Extended to<input type="date" id="extendTo"></label>
+      <label class="f">Next review date<input type="date" id="nextReview"></label>
+    </div>
+    <label class="f">Reasons and next steps<textarea id="outcomeNotes"></textarea></label>
+    <p class="law small" id="outcomeWarn" hidden></p>
+  </section>
+
+  <section class="panel" aria-labelledby="h7d">
+    <h2 id="h7d"><span class="n">7</span>Sign off</h2>
+    <div class="grid2">
+      <div style="display:grid;gap:6px;min-width:0">
+        <div class="sigRow"><b class="small">Reviewer signature</b><button type="button" class="sm ghost" data-clear="sigMgr">Clear</button></div>
+        <canvas class="sig" id="sigMgr" aria-label="Reviewer signature pad"></canvas>
+      </div>
+      <div style="display:grid;gap:6px;min-width:0">
+        <div class="sigRow"><b class="small">Employee signature</b><button type="button" class="sm ghost" data-clear="sigEmp">Clear</button></div>
+        <canvas class="sig" id="sigEmp" aria-label="Employee signature pad"></canvas>
+      </div>
+    </div>
+    <p class="muted small">The employee's signature confirms the meeting took place and they have seen the form. It does not mean they agree with every rating.</p>
+  </section>
+
+  <section class="panel" aria-labelledby="h8d">
+    <h2 id="h8d"><span class="n">8</span>Email to the staff member</h2>
+    <ol class="mailSteps">
+      <li>Tap <b>Download PDF</b> at the bottom of the screen.</li>
+      <li>Copy the subject and message below into a new email from the branch account.</li>
+      <li>Attach the PDF and send. Save a copy in their staff file.</li>
+    </ol>
+    <label class="f">Staff member's email<span class="h">Optional. Used by "Open in email app"</span><input type="email" id="empEmail" inputmode="email" autocomplete="off"></label>
+    <label class="f">Subject<input type="text" id="mailSubject" readonly></label>
+    <div><button type="button" class="sm" data-copy="mailSubject">Copy subject</button></div>
+    <label class="f">Message<span class="h" id="mailHint">Fills in from the form. You can edit it before copying.</span><textarea id="mailBody"></textarea></label>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <button type="button" class="sm primary" data-copy="mailBody">Copy message</button>
+      <button type="button" class="sm ghost" id="mailRebuild" hidden>Rebuild from form</button>
+      <a class="btnlink" id="mailLink" href="#" target="_blank" rel="noopener">Open in email app</a>
+    </div>
+    <p class="muted small">"Open in email app" doesn't work in every app or browser. If nothing opens, use the copy buttons. Email links can't attach the PDF, so attach it yourself.</p>
+    <div id="resetBox"></div>
+  </section>
+</div>
+
+<div class="bar"><div class="barIn">
+  <div class="status" id="status" role="status">Your answers save on this device as you go.</div>
+  <button type="button" class="primary" id="makePdf">Download PDF</button>
+</div></div>
+
+<script>
+(() => {
+const TEACHER_AREAS = [
+ {id:"plan", t:"Lesson preparation and delivery", items:[
+  ["Prepares every lesson in advance (muṭālaʿah) and follows the Safar syllabus","INSET Sept 2025"],
+  ["Delivers engaging lessons with stories and practical life examples, pitched at the students' level","INSET Sept 2025"],
+  ["Differentiates: extra time and scaffolding for lower ability, extension work for higher ability","INSET Sept 2025"],
+  ["Checks learning during the lesson with questions, quizzes, workbooks or J2J (assessment for learning)","INSET Sept 2025, High Expectations"]]},
+ {id:"quran", t:"Quran, Qaidah and memorisation", items:[
+  ["Tests every student at least once a day","High Expectations training"],
+  ["Sets a weekly portion to practise for both Saturday and Sunday","High Expectations training"],
+  ["Uses a clear pass standard: correct first time, fluent, 2–3 mistakes at most; tajweed for memorisation","High Expectations training"],
+  ["Gives specific feedback: what to work on, reads it correctly for the student, gives a practice strategy","High Expectations training"],
+  ["Follows up when practice hasn't happened and raises lack of progress with the Amir","High Expectations training"]]},
+ {id:"rec", t:"Registers, trackers and homework", items:[
+  ["Quran register 100% complete by the end of the Quran lesson","Admin Handbook: KPIs"],
+  ["Quran tracker, targets and tester logs kept up to date","Admin Handbook: Google Forms"],
+  ["Sends class homework to Admin by 12 pm Sunday for the parent Telegram channel","Admin Handbook: Telegram"],
+  ["Sets weekly J2J tasks: Qaidah sub-level, current Juz ʿAmma sūrah, Islamic Studies topic","INSET follow-up email"],
+  ["Marks homework and exam papers on time","Teacher job description"]]},
+ {id:"beh", t:"Behaviour and rewards", items:[
+  ["Sets clear class expectations and a seating plan, and keeps the class calm and focused","P04 Behaviour: classroom"],
+  ["Uses the sanction stages consistently and refers Stage 3 behaviour to the Head of Branch","P04 Behaviour: sanctions"],
+  ["Rewards fairly with merits and student of the week, recognising effort as well as results","P04 Behaviour: rewards"],
+  ["Hands confiscated phones to Admin for return to the parent only","P04 Behaviour: mobile phones"]]},
+ {id:"safe", t:"Safeguarding and professional conduct", items:[
+  ["Reports any concern about a pupil to the DSL straight away","P05 Code of Conduct, P01 Safeguarding"],
+  ["No contact with students through personal social media, phone numbers or messaging","P05 Code of Conduct: online"],
+  ["Speaks to parents in person; written feedback goes through Admin, never from a work or personal email","Admin Handbook: General communication"],
+  ["Keeps interaction with opposite-gender colleagues professional and work-related; no khalwah","P05 Code of Conduct: gender interactions"],
+  ["Keeps information about students and staff confidential; does not tutor Safar students privately","P05 Code of Conduct"]]},
+ {id:"tarb", t:"Tarbiyah and character", items:[
+  ["Leads by example in adab, speech and dress","P05 Code of Conduct, P04 dress code"],
+  ["Approachable, fair and builds a strong bond with students","INSET Sept 2025"],
+  ["Uses growth-mindset language and holds high expectations for every student, SEN included","High Expectations training"],
+  ["Brings the Safar Tarbiyah Framework values into lessons and class culture","Tarbiyah Framework, Jan 2026"]]},
+ {id:"dev", t:"Training and teamwork", items:[
+  ["Mandatory Flick Learning modules complete, including Safeguarding Level 2 by the deadline","INSET follow-up email"],
+  ["Working through the Safar Online teacher training modules","INSET follow-up email"],
+  ["Attends INSET days in September and January","INSET emails"],
+  ["Works well with the Amir, Admin and other teachers, and acts on feedback","Teacher job description"]]}
+];
+const pickAreas = () => TEACHER_AREAS;
+let AREAS = TEACHER_AREAS;
+const CONDUCT = [
+ ["Signs in on time before branch opening","Admin Handbook: timesheet"],
+ ["Follows absence reporting and leave request procedures","Staff policy"],
+ ["Professional, respectful behaviour with parents, students and staff","P05 Code of Conduct"]
+];
+const RATE = [["met","Met","good"],["partly","Partly","warn"],["not","Not met","bad"],["na","Not yet seen","na"],["nap","N/A","na"]];
+const STAGESETS = {
+ probation:[["final","Week 12","Probation review"],["ext","If extended","Follow-up review"]],
+ performance:[["autumn","Week 12","Autumn review"],["spring","Week 26","Spring review"],["summer","Week 37–38","Annual review"]]
+};
+const STAGES = {final:"Week 12 probation review", ext:"Probation follow-up review (extended probation)",
+ autumn:"Week 12 autumn review", spring:"Week 26 spring review", summer:"Week 37–38 annual review"};
+const PERF = [["good","Performing well. Keep it up."],["dev","Some standards to work on. Development objectives agreed in section 4."],["pip","Serious concerns. Formal performance improvement plan, with HR advice."]];
+const OUTCOMES = {
+ autumn:PERF, spring:PERF, summer:PERF,
+ ext:[["confirm","Confirm in post. Probation passed."],["notconfirm","Do not confirm. Employment to end with contractual notice."]],
+ initial:[["ontrack","On track. Continue probation."],["concerns","Concerns raised. Objectives and support agreed in section 4."]],
+ mid:[["ontrack","On track. Continue probation."],["concerns","Concerns raised in writing. Objectives, support and a review date agreed."]],
+ final:[["confirm","Confirm in post. Probation passed."],["extend","Extend probation, with clear objectives and a new review date."],["notconfirm","Do not confirm. Employment to end with contractual notice."]]
+};
+const uid = () => Math.random().toString(36).slice(2,9);
+const pad = n => String(n).padStart(2,"0");
+const iso = d => d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+const today = () => iso(new Date());
+const parse = s => { if(!s) return null; const [y,m,d]=s.split("-").map(Number); return new Date(y,m-1,d); };
+const addMonths = (s,n) => { const d=parse(s); if(!d) return ""; d.setMonth(d.getMonth()+n); return iso(d); };
+const fmt = s => { const d=parse(s); return d? d.toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"}) : "—"; };
+const esc = s => String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const $ = id => document.getElementById(id);
+const fresh = () => ({kind:"probation", stage:"final", empName:"", role:"Teacher", obsDate:"", branch:"", reviewer:"", startDate:"", endDate:"",
+  reviewDate:today(), present:"", ratings:{}, notes:{}, absDays:"", lateCount:"", conduct:{}, conductNotes:"",
+  objs:[{id:uid(),what:"",support:"",due:"",progress:""}], training:"", support:"", strengths:"", improve:"",
+  empComments:"", empEmail:"", mailBody:"", mailEdited:false, outcome:"", extendTo:"", nextReview:"", outcomeNotes:"", sigMgr:"", sigEmp:""});
+let S = fresh();
+
+/* draft storage (best effort) */
+const KEY="teacher-review-draft";
+let saveT=null;
+function save(){ try{ renderMail(); }catch(e){} clearTimeout(saveT); saveT=setTimeout(()=>{ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){ setStatus("Couldn't save a draft on this device. Keep the page open until you download the PDF.","err"); } },300); }
+function load(){ try{ const d=JSON.parse(localStorage.getItem(KEY)||"null"); if(d&&d.ratings) return d; }catch(e){} return null; }
+function setStatus(m,k){ const el=$("status"); el.textContent=m; el.className="status"+(k?" "+k:""); }
+
+/* logo */
+$("logoImg").onerror=()=>{ $("logoImg").hidden=true; $("wordmark").hidden=false; };
+
+/* simple fields */
+const FIELDS=["kind","empEmail","empName","role","obsDate","branch","reviewer","startDate","endDate","reviewDate","present","absDays","lateCount","conductNotes","training","support","strengths","improve","empComments","extendTo","nextReview","outcomeNotes"];
+function bindFields(){
+  FIELDS.forEach(f=>{ const el=$(f); el.value=S[f]??""; el.oninput=()=>{ S[f]=el.value;
+    if(f==="startDate"&&S.startDate&&!S.endDate){ S.endDate=addMonths(S.startDate,6); $("endDate").value=S.endDate; }
+    if(f==="kind"){ S.stage=STAGESETS[S.kind][0][0]; renderKind(); renderStage(); setStatus(S.kind==="probation"?"Probation review selected.":"Termly performance review selected.","ok"); }
+    
+    save(); renderDates(); renderWarn(); }; });
+}
+function renderKind(){ const p=S.kind==="probation";
+  $("pageTitle").textContent = p ? "Teacher Probation Review" : "Teacher Performance Review";
+  $("lawBox").hidden=!p; $("endWrap").hidden=!p; renderDates(); }
+function renderDates(){
+  const six=addMonths(S.startDate,6);
+  if(S.kind!=="probation"){ $("sixMonth").textContent=""; return; }
+  $("endHint").textContent = S.startDate ? "Default is 6 months after the start date" : "Set the start date to fill this in";
+  if(!six){ $("sixMonth").textContent=""; return; }
+  const finalBy=parse(six); finalBy.setDate(finalBy.getDate()-14);
+  $("sixMonth").innerHTML=`Reaches 6 months' service on <b>${fmt(six)}</b>. Finish probation, including any follow-up review, by <b>${fmt(iso(finalBy))}</b>.`;
+}
+
+/* ratings */
+function chipGroup(key,val){
+  return `<div class="chips" role="radiogroup">${RATE.map(([v,l,c])=>`<label class="chip"><input type="radio" name="${key}" value="${v}" ${val===v?"checked":""}><span class="${c}">${l}</span></label>`).join("")}</div>`;
+}
+function areaStat(a){ const r=a.items.map((_,i)=>S.ratings[a.id+"."+i]); const rated=r.filter(x=>x&&x!=="na"&&x!=="nap");
+  return {met:r.filter(x=>x==="met").length, rated:rated.length, issues:r.filter(x=>x==="partly"||x==="not").length, total:r.length}; }
+function pillFor(st){ if(!st.rated) return `<span class="pill">Not rated</span>`;
+  if(st.issues) return `<span class="pill ${st.issues>1?"bad":"warn"}">${st.issues} to work on</span>`;
+  return `<span class="pill good">${st.met}/${st.rated} met</span>`; }
+function renderAreas(){
+  $("roleLabel").textContent = "Teacher checklist: lessons, Quran testing, records, behaviour, safeguarding, tarbiyah and training.";
+  $("areas").innerHTML=AREAS.map(a=>`<div class="area" data-a="${a.id}"><div class="areaHead"><h3>${esc(a.t)}</h3><span data-pill>${pillFor(areaStat(a))}</span></div>
+   ${a.items.map(([txt,src],i)=>{ const k=a.id+"."+i; return `<div class="check"><p>${esc(txt)}</p><span class="src">Source: ${esc(src)}</span>${chipGroup("r-"+k,S.ratings[k])}</div>`; }).join("")}
+   <label class="f" style="font-weight:400"><textarea data-note="${a.id}" placeholder="Evidence and examples (dates, what you saw)">${esc(S.notes[a.id])}</textarea></label></div>`).join("");
+  $("areas").querySelectorAll("input[type=radio]").forEach(r=>r.onchange=()=>{ const k=r.name.slice(2); S.ratings[k]=r.value; save();
+    const a=AREAS.find(x=>x.id===k.split(".")[0]); r.closest(".area").querySelector("[data-pill]").innerHTML=pillFor(areaStat(a)); renderScores(); });
+  $("areas").querySelectorAll("[data-note]").forEach(t=>t.oninput=()=>{ S.notes[t.dataset.note]=t.value; save(); });
+  $("conduct").innerHTML=CONDUCT.map(([txt,src],i)=>`<div class="check"><p>${esc(txt)}</p><span class="src">${esc(src)}</span>${chipGroup("c-"+i,S.conduct[i])}</div>`).join("");
+  $("conduct").querySelectorAll("input").forEach(r=>r.onchange=()=>{ S.conduct[r.name.slice(2)]=r.value; save(); renderScores(); });
+}
+function totals(){ let met=0,partly=0,not=0,na=0,nap=0,blank=0;
+  AREAS.forEach(a=>a.items.forEach((_,i)=>{ const v=S.ratings[a.id+"."+i]; if(v==="met")met++; else if(v==="partly")partly++; else if(v==="not")not++; else if(v==="na")na++; else if(v==="nap")nap++; else blank++; }));
+  return {met,partly,not,na,nap,blank,all:met+partly+not+na+nap+blank}; }
+function renderScores(){ const t=totals(); const rated=t.met+t.partly+t.not;
+  const pct=rated?Math.round(t.met/rated*100):0;
+  $("scores").innerHTML=`<div class="score"><b>${rated?pct+"%":"–"}</b><span>standards met (of those seen)</span></div>
+   <div class="score"><b>${t.met}</b><span>met</span></div><div class="score"><b style="color:var(--warn)">${t.partly}</b><span>partly met</span></div>
+   <div class="score"><b style="color:var(--bad)">${t.not}</b><span>not met</span></div><div class="score"><b>${t.na+t.blank}</b><span>not yet seen or unrated</span></div><div class="score"><b>${t.nap}</b><span>not applicable</span></div>`; }
+
+/* objectives */
+function renderObjs(){
+  $("objs").innerHTML=S.objs.map((o,i)=>`<div class="obj" data-o="${o.id}"><div class="objTop"><b class="small">Objective ${i+1}</b>${S.objs.length>1?`<button type="button" class="sm ghost" data-rm>Remove</button>`:""}</div>
+   <label class="f">What, and how it will be measured<textarea data-k="what" placeholder="e.g. Test every student at least once a day and record it on the Quran tracker, every session for 4 weeks">${esc(o.what)}</textarea></label>
+   <div class="grid2"><label class="f">Support or training<input type="text" data-k="support" value="${esc(o.support)}"></label><label class="f">Target date<input type="date" data-k="due" value="${esc(o.due)}"></label></div>
+   <label class="f">Progress at this review<input type="text" data-k="progress" value="${esc(o.progress)}"></label></div>`).join("");
+  $("objs").querySelectorAll(".obj").forEach(el=>{ const o=S.objs.find(x=>x.id===el.dataset.o);
+    el.querySelectorAll("[data-k]").forEach(inp=>inp.oninput=()=>{ o[inp.dataset.k]=inp.value; save(); });
+    const rm=el.querySelector("[data-rm]"); if(rm) rm.onclick=()=>{ S.objs=S.objs.filter(x=>x!==o); save(); renderObjs(); }; });
+}
+$("addObj").onclick=()=>{ S.objs.push({id:uid(),what:"",support:"",due:"",progress:""}); save(); renderObjs(); };
+
+/* stage + outcome */
+function renderStage(){
+  const set=STAGESETS[S.kind]||STAGESETS.probation;
+  if(!set.some(s=>s[0]===S.stage)) S.stage=set[0][0];
+  $("stages").innerHTML=set.map(([v,b,s])=>`<button type="button" class="stage" data-stage="${v}" aria-pressed="${v===S.stage}"><b>${b}</b><small>${s}</small></button>`).join("");
+  $("stages").querySelectorAll(".stage").forEach(b=>b.onclick=()=>{ S.stage=b.dataset.stage; save(); renderStage(); setStatus(STAGES[S.stage]+" selected.","ok"); });
+  const opts=OUTCOMES[S.stage]; if(!opts.some(o=>o[0]===S.outcome)) S.outcome="";
+  $("outcomes").innerHTML=opts.map(([v,l])=>`<label class="oc"><input type="radio" name="outcome" value="${v}" ${S.outcome===v?"checked":""}><span>${l}</span></label>`).join("");
+  $("outcomes").querySelectorAll("input").forEach(r=>r.onchange=()=>{ S.outcome=r.value; save(); renderOutcome(); });
+  renderOutcome();
+}
+function renderOutcome(){ $("extendBox").hidden = S.outcome!=="extend"; renderWarn(); }
+function renderWarn(){ const w=$("outcomeWarn"); const six=addMonths(S.startDate,6); const past=six&&S.reviewDate&&S.reviewDate>=six;
+  let msg="";
+  if(S.outcome==="pip") msg="Before starting a formal improvement plan: check the concerns were raised earlier with support offered, set clear targets and a review date, follow the disciplinary or capability policy, and take HR advice. The employee has the right to be accompanied at formal meetings.";
+  else if(S.kind!=="probation") msg="";
+  else if(S.outcome==="notconfirm") msg="Before ending employment: check the notice period in the contract, make sure concerns were raised earlier in writing with support offered, and take HR or legal advice"+(past?". The employee has 6 months' service by this date, so from 1 January 2027 they can claim unfair dismissal.":".");
+  else if(S.outcome==="extend"&&past) msg="Extending does not delay unfair dismissal rights. From 1 January 2027, staff with 6 months' service are protected even while probation continues.";
+  w.hidden=!msg; w.textContent=msg; }
+
+/* signatures */
+const pads={};
+function setupSig(id){ const c=$(id), ctx=c.getContext("2d"); let drawing=false,last=null;
+  const size=()=>{ const r=c.getBoundingClientRect(),dpr=window.devicePixelRatio||1; c.width=Math.max(1,Math.round(r.width*dpr)); c.height=Math.max(1,Math.round(r.height*dpr));
+    ctx.setTransform(dpr,0,0,dpr,0,0); ctx.lineWidth=2.2; ctx.lineCap="round"; ctx.lineJoin="round"; ctx.strokeStyle="#111";
+    if(S[id]){ const im=new Image(); im.onload=()=>ctx.drawImage(im,0,0,r.width,r.height); im.src=S[id]; } };
+  const pt=e=>{ const r=c.getBoundingClientRect(); return {x:e.clientX-r.left,y:e.clientY-r.top}; };
+  c.addEventListener("pointerdown",e=>{ drawing=true; last=pt(e); c.setPointerCapture(e.pointerId); });
+  c.addEventListener("pointermove",e=>{ if(!drawing) return; const p=pt(e); ctx.beginPath(); ctx.moveTo(last.x,last.y); ctx.lineTo(p.x,p.y); ctx.stroke(); last=p; });
+  const end=()=>{ if(!drawing) return; drawing=false; S[id]=c.toDataURL("image/png"); save(); };
+  c.addEventListener("pointerup",end); c.addEventListener("pointercancel",end);
+  pads[id]={size,clear:()=>{ ctx.clearRect(0,0,c.width,c.height); S[id]=""; save(); }, el:c};
+}
+setupSig("sigMgr"); setupSig("sigEmp");
+document.querySelectorAll("[data-clear]").forEach(b=>b.onclick=()=>pads[b.dataset.clear].clear());
+window.addEventListener("resize",()=>{ clearTimeout(window.__sz); window.__sz=setTimeout(()=>{ pads.sigMgr.size(); pads.sigEmp.size(); },150); });
+
+/* reset */
+function resetUI(){ const box=$("resetBox");
+  box.innerHTML=`<button type="button" class="ghost sm" id="resetAsk">Start a new review</button>`;
+  $("resetAsk").onclick=()=>{ box.innerHTML=`<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><span class="small">Clear this form? Download the PDF first.</span><button type="button" class="sm" id="resetYes">Clear form</button><button type="button" class="sm ghost" id="resetNo">Cancel</button></div>`;
+    $("resetNo").onclick=resetUI;
+    $("resetYes").onclick=()=>{ const keep={reviewer:S.reviewer,branch:S.branch,kind:S.kind,stage:S.stage}; S=Object.assign(fresh(),keep); save(); boot(); window.scrollTo(0,0); setStatus("New review started. Reviewer and branch kept.","ok"); }; };
+}
+
+/* PDF */
+let logoData=null;
+fetch("logo.png").then(r=>r.ok?r.blob():null).then(b=>{ if(!b) return; const fr=new FileReader(); fr.onload=()=>{ const im=new Image(); im.onload=()=>{ logoData={src:fr.result,w:im.naturalWidth,h:im.naturalHeight}; }; im.src=fr.result; }; fr.readAsDataURL(b); }).catch(()=>{});
+const C={ink:[22,32,29],muted:[91,105,100],line:[211,218,215],accent:[17,105,90],good:[31,122,67],warn:[162,99,0],bad:[179,38,30],soft:[243,245,244]};
+const RLABEL={met:["Met",C.good],partly:["Partly",C.warn],not:["Not met",C.bad],na:["Not yet seen",C.muted],nap:["N/A",C.muted]};
+function buildPdf(){
+  const {jsPDF}=window.jspdf; const doc=new jsPDF({unit:"mm",format:"a4",compress:true});
+  const W=210,H=297,M=15,CW=W-2*M; let y=M;
+  const tc=c=>doc.setTextColor(...c), fc=c=>doc.setFillColor(...c), dc=c=>doc.setDrawColor(...c);
+  const font=(s,b)=>{ doc.setFont("helvetica",b?"bold":"normal"); doc.setFontSize(s); };
+  const need=h=>{ if(y+h>H-18){ doc.addPage(); y=M; } };
+  const para=(txt,size,col,bold,indent=0)=>{ font(size,bold); tc(col); const lh=size*0.43; doc.splitTextToSize(String(txt),CW-indent).forEach(l=>{ need(lh); doc.text(l,M+indent,y+lh*0.8); y+=lh; }); };
+  const heading=t=>{ need(14); y+=3; font(12.5,true); tc(C.accent); doc.text(t,M,y+4); y+=6.5; dc(C.accent); doc.setLineWidth(0.4); doc.line(M,y,M+CW,y); y+=4; };
+  const block=(label,txt)=>{ if(!String(txt||"").trim()) return; need(10); font(8,true); tc(C.muted); doc.text(label.toUpperCase(),M,y+3); y+=5; para(txt.trim(),10,C.ink,false); y+=3; };
+
+  if(logoData){ const h=14, w=Math.min(70,h*logoData.w/logoData.h); try{ doc.addImage(logoData.src,"PNG",M,y,w,w*logoData.h/logoData.w); }catch(e){} }
+  else { font(13,true); tc(C.accent); doc.text("Safar Academy",M,y+8); }
+  font(8.5,false); tc(C.muted); doc.text("Confidential: staff record",W-M,y+5,{align:"right"});
+  const P=S.kind==="probation";
+  y+=20; font(19,true); tc(C.ink); doc.text(P?"Probation Review":"Performance Review",M,y); y+=7;
+  font(11,false); tc(C.accent); doc.text(STAGES[S.stage],M,y); y+=8;
+
+  const det=P ? [["Employee",S.empName],["Job title",S.role],["Branch",S.branch],["Reviewer",S.reviewer],["Start date",fmt(S.startDate)],["Probation ends",fmt(S.endDate)],["Review date",fmt(S.reviewDate)],["Lesson observed",fmt(S.obsDate)],["6 months' service",fmt(addMonths(S.startDate,6))],["Others present",S.present]]
+    : [["Employee",S.empName],["Job title",S.role],["Branch",S.branch],["Reviewer",S.reviewer],["Start date",fmt(S.startDate)],["Review date",fmt(S.reviewDate)],["Lesson observed",fmt(S.obsDate)],["Others present",S.present]];
+  const cw=CW/3; det.forEach((d,i)=>{ const cx=M+(i%3)*cw, cy=y+Math.floor(i/3)*12; font(7.5,true); tc(C.muted); doc.text(d[0].toUpperCase(),cx,cy); font(10,false); tc(C.ink); doc.text(doc.splitTextToSize(d[1]||"—",cw-4)[0],cx,cy+4.6); });
+  y+=50;
+
+  const t=totals(), rated=t.met+t.partly+t.not;
+  fc(C.soft); doc.rect(M,y,CW,14,"F"); font(10,true); tc(C.ink);
+  doc.text(`${rated?Math.round(t.met/rated*100)+"%":"–"} of standards seen were met`,M+4,y+6);
+  font(9,false); tc(C.muted); doc.text(`Met ${t.met}  ·  Partly ${t.partly}  ·  Not met ${t.not}  ·  Not yet seen ${t.na+t.blank}  ·  N/A ${t.nap}`,M+4,y+11); y+=19;
+
+  heading(`Teaching standards${S.role?": "+S.role:""}`);
+  AREAS.forEach(a=>{ need(12); font(10.5,true); tc(C.ink); doc.text(a.t,M,y+4); y+=7;
+    a.items.forEach(([txt],i)=>{ const v=S.ratings[a.id+"."+i]; const [lab,col]=RLABEL[v]||["Not rated",C.muted];
+      const lines=doc.splitTextToSize(txt,CW-34); const h=lines.length*4.2+2; need(h);
+      font(9.5,false); tc(C.ink); lines.forEach((l,j)=>doc.text(l,M+2,y+3.5+j*4.2));
+      font(9,true); tc(col); doc.text(lab,M+CW,y+3.5,{align:"right"});
+      dc(C.line); doc.setLineWidth(0.15); doc.line(M,y+h,M+CW,y+h); y+=h+1; });
+    if((S.notes[a.id]||"").trim()){ y+=1; para("Evidence: "+S.notes[a.id].trim(),9,C.muted,false,2); }
+    y+=4; });
+
+  heading("Attendance, timekeeping and conduct");
+  para(`Days absent since start: ${S.absDays||"0"}    Times late: ${S.lateCount||"0"}`,10,C.ink,false); y+=2;
+  CONDUCT.forEach(([txt],i)=>{ const [lab,col]=RLABEL[S.conduct[i]]||["Not rated",C.muted]; need(6); font(9.5,false); tc(C.ink); doc.text(txt,M+2,y+3.5); font(9,true); tc(col); doc.text(lab,M+CW,y+3.5,{align:"right"}); y+=5.5; });
+  y+=2; block("Notes",S.conductNotes);
+
+  heading("Objectives and support");
+  const objs=S.objs.filter(o=>o.what.trim());
+  if(!objs.length) para("No objectives recorded.",10,C.muted,false);
+  objs.forEach((o,i)=>{ need(12); font(10,true); tc(C.ink); doc.text(`${i+1}.`,M,y+3.5); para(o.what.trim(),10,C.ink,true,6);
+    const meta=[o.due?"Target: "+fmt(o.due):"",o.support?"Support: "+o.support:"",o.progress?"Progress: "+o.progress:""].filter(Boolean).join("   ·   ");
+    if(meta) para(meta,9,C.muted,false,6); y+=3; });
+  block("Training completed",S.training); block("Support or adjustments",S.support);
+
+  heading("Summary");
+  block("Key strengths",S.strengths); block("Areas to improve",S.improve); block("Employee's comments",S.empComments);
+
+  heading("Outcome");
+  const oc=(OUTCOMES[S.stage].find(o=>o[0]===S.outcome)||[,"No outcome selected"])[1];
+  para(oc,11,C.ink,true); y+=2;
+  if(S.outcome==="extend") para(`Extended to ${fmt(S.extendTo)}. Next review ${fmt(S.nextReview)}.`,10,C.ink,false);
+  y+=1; block("Reasons and next steps",S.outcomeNotes);
+
+  need(58); y+=4; font(8,true); tc(C.muted);
+  const sw=(CW-10)/2;
+  [["sigMgr","Reviewer",S.reviewer],["sigEmp","Employee",S.empName]].forEach(([k,lab,name],i)=>{ const x=M+i*(sw+10);
+    doc.text(lab.toUpperCase(),x,y);
+    if(S[k]){ const c=pads[k].el; const h=Math.min(28,sw*c.height/c.width); try{ doc.addImage(S[k],"PNG",x,y+2,h*c.width/c.height,h); }catch(e){} }
+    dc(C.ink); doc.setLineWidth(0.3); doc.line(x,y+32,x+sw,y+32);
+    font(9.5,false); tc(C.ink); doc.text(name||"",x,y+37); font(8,true); tc(C.muted); });
+  y+=42; para("The employee's signature confirms the meeting took place and they have received a copy. It does not mean they agree with every rating; their comments are recorded above.",8.5,C.muted,false);
+
+  const n=doc.getNumberOfPages();
+  for(let i=1;i<=n;i++){ doc.setPage(i); font(7.5,false); tc(C.muted); doc.text(`Safar Academy · ${S.kind==="probation"?"Probation":"Performance"} review ·${S.empName||""} · ${fmt(S.reviewDate)}`,M,H-8); doc.text(`Page ${i} of ${n}`,W-M,H-8,{align:"right"}); }
+  return doc;
+}
+let downloads=null;
+if(window.claude&&window.claude.use){ window.claude.use("downloads").then(d=>{ downloads=d; }).catch(()=>{}); }
+$("makePdf").onclick=async()=>{
+  if(!window.jspdf){ setStatus("The PDF tool didn't load. Check your connection and reload.","err"); return; }
+  const miss=[]; if(!S.empName.trim()) miss.push("employee name"); if(!S.reviewer.trim()) miss.push("reviewer");
+  if(miss.length){ setStatus(`Add the ${miss.join(" and ")} in section 1 first.`,"err"); $(S.empName.trim()?"reviewer":"empName").focus(); return; }
+  if(!downloads){ setStatus("Downloads aren't available in this view. Open the page on claude.ai in a browser or the Claude app.","err"); return; }
+  const btn=$("makePdf"); btn.disabled=true; setStatus("Building the PDF…");
+  try{
+    const blob=buildPdf().output("blob");
+    const fname=`${S.kind==="probation"?"Probation":"Performance"}-Review_${S.empName.trim().replace(/[^\w\- ]+/g,"").replace(/\s+/g,"-")}_${S.stage}_${S.reviewDate||today()}.pdf`;
+    await downloads.save({filename:fname,data:blob});
+    setStatus(`Saved ${fname}. Email it to ${S.empName.split(" ")[0]} and keep a copy in their staff file.`,"ok");
+  }catch(e){ const c=e&&e.code;
+    if(c==="declined") setStatus("Download cancelled. Tap the button again when ready.");
+    else if(c==="rate_limited") setStatus("A download prompt is already open. Finish that one first.","err");
+    else setStatus("Couldn't create the PDF. Try again.","err");
+  }finally{ btn.disabled=false; }
+};
+
+/* email template (house style from the Admin Handbook) */
+const SUBJ={final:"Week 12 Probation Review", ext:"Probation Follow-Up Review", autumn:"Week 12 Autumn Review", spring:"Week 26 Spring Review", summer:"Annual Review"};
+const clean=s=>String(s||"").replace(/[.,]/g,"").replace(/\s+/g," ").trim().replace(/\b\w/g,c=>c.toUpperCase());
+function mailSubject(){ return [SUBJ[S.stage]||"Review", clean(S.empName)].filter(Boolean).join(" | "); }
+function mailText(){
+  const first=(S.empName||"").trim().split(/\s+/)[0]||"[Name]";
+  const stage=(STAGES[S.stage]||"review").replace(/^\w/,c=>c.toLowerCase());
+  const nr=S.nextReview?fmt(S.nextReview):"the date we agreed";
+  const OUT={
+    confirm:`I'm pleased to confirm that you have passed your probation, and your role as ${S.role} is now confirmed. Thank you for all your hard work so far.`,
+    extend:`As we discussed, we have agreed to extend your probation to ${S.extendTo?fmt(S.extendTo):"the date we agreed"}. The objectives and support we agreed are in the attached form, and your next review is on ${nr}.`,
+    notconfirm:`As we discussed in our meeting, your probation has not been confirmed. I will write to you separately with the details, including your notice period.`,
+    ontrack:`You are on track, and I'm happy with how you have settled in.`,
+    concerns:`As we discussed, there are some areas we need to work on. The objectives and support we agreed are in the attached form.`,
+    good:`Thank you for your hard work this term. You are performing well against our teaching standards.`,
+    dev:`We agreed some areas to work on, and the objectives and support are set out in the attached form.`,
+    pip:`As we discussed, we will be putting a formal performance improvement plan in place. I will send you the details separately, and we will meet again on ${nr}.`
+  };
+  const objs=S.objs.filter(o=>o.what.trim()).map(o=>`- ${o.what.trim()}${o.due?` (by ${fmt(o.due)})`:""}`);
+  const parts=[
+    `Assalāmu ʿalaikum wa raḥmatullāhi wa barakātuh ${first},`,
+    `Thank you for meeting with me${S.reviewDate?` on ${fmt(S.reviewDate)}`:""} for your ${stage}. Please find attached a signed copy of the review form for your records.`,
+    OUT[S.outcome]||`Please read through the form and let me know if you have any questions.`
+  ];
+  if(objs.length && S.outcome!=="notconfirm") parts.push(`Your objectives for the coming weeks:\n${objs.join("\n")}`);
+  parts.push(`If anything in the form doesn't match what we discussed, please reply to this email within 7 days.`);
+  parts.push(`Jazakallahu khairan\n\n${S.reviewer||"[Your name]"}\nSafar Academy${S.branch?" "+S.branch:""}`);
+  return parts.join("\n\n");
+}
+function renderMail(){
+  $("mailSubject").value=mailSubject();
+  if(!S.mailEdited){ S.mailBody=mailText(); }
+  if(document.activeElement!==$("mailBody")) $("mailBody").value=S.mailBody;
+  $("mailRebuild").hidden=!S.mailEdited;
+  $("mailHint").textContent=S.mailEdited?"You've edited this message, so it no longer updates from the form.":"Fills in from the form. You can edit it before copying.";
+  $("mailLink").href=`mailto:${encodeURIComponent((S.empEmail||"").trim())}?subject=${encodeURIComponent(mailSubject())}&body=${encodeURIComponent(S.mailBody)}`;
+}
+$("mailBody").oninput=()=>{ S.mailBody=$("mailBody").value; S.mailEdited=true; save(); };
+$("mailRebuild").onclick=()=>{ S.mailEdited=false; save(); $("mailBody").value=S.mailBody; setStatus("Message rebuilt from the form.","ok"); };
+document.querySelectorAll("[data-copy]").forEach(b=>b.onclick=()=>{ const el=$(b.dataset.copy); const txt=el.value; const label=b.textContent;
+  const done=()=>{ b.textContent="Copied"; setTimeout(()=>b.textContent=label,1500); setStatus((b.dataset.copy==="mailSubject"?"Subject":"Message")+" copied. Paste it into your email.","ok"); };
+  const fallback=()=>{ el.removeAttribute("readonly"); el.focus(); el.select(); el.setSelectionRange(0,txt.length); try{ document.execCommand("copy"); done(); }catch(e){ setStatus("Text selected. Press copy on your keyboard or phone.","ok"); } if(el.id==="mailSubject") el.setAttribute("readonly",""); };
+  try{ navigator.clipboard.writeText(txt).then(done,fallback); }catch(e){ fallback(); } });
+
+/* staff names: current staff from Staff Database > Employment Records (pulled 14 November 2026) */
+const STAFF = [{"n":"Abdul Aleem Ahmed","p":"Br","b":"Harlow","r":"Teacher","s":"2025-09-06"},{"n":"Abdul Haady Hassan Murshid","p":"Br","b":"Slough","r":"Teacher","s":"2024-09-07"},{"n":"Abdul Rahman Patel","p":"Br","b":"Harlow","r":"Teacher","s":"2020-09-19"},{"n":"Absar Kaisar","p":"Br","b":"Edmonton","r":"Teacher","s":"2017-09-02"},{"n":"Adam Balesaria","p":"Br","b":"Edmonton","r":"Teacher","s":"2024-09-28"},{"n":"Adam Husaunndee","p":"Br","b":"Enfield","r":"Amir","s":"2005-09-01"},{"n":"Ahsan Ali","p":"Br","b":"Slough","r":"Teacher","s":"2022-09-02"},{"n":"Ajmal Ramankhan","p":"Br","b":"Enfield","r":"Teacher","s":"2016-09-03"},{"n":"Aladeen Polat","p":"Br","b":"Edmonton","r":"Support Staff","s":"2022-10-29"},{"n":"Aliyaan Sahil","p":"Br","b":"Harlow","r":"Teacher","s":"2024-10-12"},{"n":"Altaf Bahrami","p":"Br","b":"Slough","r":"Teacher","s":"2024-01-13"},{"n":"Amaan Miah","p":"Sr","b":"Edmonton","r":"Teacher","s":"2025-09-06"},{"n":"Amila Fairoos Lebbe","p":"Sr","b":"Finchley","r":"Teacher","s":"2018-09-01"},{"n":"Amjad Shaikh","p":"Br","b":"","r":"Executive Head","s":"2005-09-01"},{"n":"Arifur Rahman","p":"Br","b":"Harlow","r":"Teacher","s":"2021-09-19"},{"n":"Atiya Esmail","p":"Sr","b":"Slough","r":"Teacher","s":"2026-09-05"},{"n":"Azizul Islam","p":"Br","b":"Harlow","r":"Teacher","s":"2025-09-06"},{"n":"Burhan Uddin","p":"Br","b":"Harlow","r":"Amir","s":"2014-09-06"},{"n":"Dahyim Karim","p":"Br","b":"Enfield","r":"Lead Admin","s":"2020-09-05"},{"n":"Faeez Aullyar","p":"Br","b":"Enfield","r":"Teacher","s":"2024-09-07"},{"n":"Faisal Samdani","p":"Br","b":"","r":"Operations & Finance Manager","s":"2015-01-03"},{"n":"Faiza Sagaf","p":"Sr","b":"Slough","r":"Teacher","s":"2026-09-05"},{"n":"Fatema Begum","p":"Sr","b":"Edmonton","r":"Teacher","s":"2025-09-06"},{"n":"Fawaaz Aullyar","p":"Br","b":"Enfield","r":"Teacher","s":"2022-09-03"},{"n":"Habib Ali","p":"Br","b":"Harlow","r":"Teacher","s":"2026-05-16"},{"n":"Hafsa Mahmood","p":"Sr","b":"Enfield","r":"Teacher","s":"2025-05-11"},{"n":"Hamida Hussain","p":"Sr","b":"Finchley","r":"Admin","s":"2022-10-01"},{"n":"Hamza Lohiya","p":"Br","b":"Enfield","r":"Teacher","s":"2026-09-05"},{"n":"Hannah Toofail","p":"Sr","b":"Enfield","r":"Teacher","s":"2024-09-07"},{"n":"Hashim Uddin","p":"Br","b":"Finchley","r":"Amir","s":"2006-09-03"},{"n":"Hussain Mulla","p":"Br","b":"Edmonton","r":"Amir","s":"2009-09-09"},{"n":"Hussna Khan","p":"Sr","b":"Finchley","r":"Teacher","s":"2026-09-05"},{"n":"Ibraheem Atif","p":"Br","b":"Enfield","r":"Teacher","s":"2023-09-02"},{"n":"Ibrahim Haroon","p":"Br","b":"Edmonton","r":"Teacher","s":"2021-09-04"},{"n":"Ikra Amin","p":"Sr","b":"Enfield","r":"Teacher","s":"2026-09-05"},{"n":"Imran Guled","p":"Br","b":"Finchley","r":"Teacher","s":"2024-09-07"},{"n":"Ishrat Naushen","p":"Sr","b":"Edmonton","r":"Teacher","s":"2020-10-24"},{"n":"Issac Ganee","p":"Br","b":"Edmonton","r":"Teacher","s":"2021-09-04"},{"n":"Jamil Mohammad","p":"Br","b":"Finchley","r":"Teacher","s":"2012-09-15"},{"n":"Kaif Hassan","p":"Br","b":"Edmonton","r":"Lead Admin","s":"2016-09-01"},{"n":"Kavid Karim","p":"Br","b":"Edmonton","r":"Admin","s":"2022-11-27"},{"n":"Kawthar Shariff","p":"Sr","b":"Enfield","r":"Teacher","s":"2022-09-03"},{"n":"Kazi Hafeez","p":"Br","b":"Edmonton","r":"Teacher","s":"2026-10-17"},{"n":"Khadijah Jahan","p":"Sr","b":"Edmonton","r":"Teacher","s":"2022-09-03"},{"n":"Lema Delara","p":"Sr","b":"Finchley","r":"Teacher","s":"2021-09-04"},{"n":"Mahfuz Kadir","p":"Br","b":"Finchley","r":"Teacher","s":"2021-09-04"},{"n":"Marwa Hamid","p":"Sr","b":"Slough","r":"Teacher","s":"2024-02-18"},{"n":"Marwah Ahmed","p":"Sr","b":"Harlow","r":"Teacher","s":"2024-09-07"},{"n":"Mayesha Ahmed","p":"Sr","b":"Harlow","r":"Teacher","s":"2016-10-09"},{"n":"Mohammed Iqbal Hussain","p":"Br","b":"Edmonton","r":"Teacher","s":"2024-09-07"},{"n":"Mohammed Shuheb Miah","p":"Br","b":"Edmonton","r":"Deputy Amir","s":"2013-01-09"},{"n":"Musa Rashid","p":"Br","b":"Edmonton","r":"Teacher","s":"2025-01-11"},{"n":"Mustafa Atif","p":"Br","b":"Enfield","r":"Teacher","s":"2024-09-07"},{"n":"Mustafa Shire","p":"Br","b":"Enfield","r":"Admin","s":"2026-09-05"},{"n":"Nageena Shujat Ali","p":"Sr","b":"Harlow","r":"Lead Admin","s":"2019-09-08"},{"n":"Nasrin Sultana Juma","p":"Sr","b":"Enfield","r":"Teacher","s":"2025-01-11"},{"n":"Naureen Riffat","p":"Sr","b":"Edmonton","r":"Teacher","s":"2017-09-08"},{"n":"Nelima Azad","p":"Sr","b":"Slough","r":"Deputy Amir","s":"2016-09-01"},{"n":"Nohan Sarfarazi","p":"Br","b":"Slough","r":"Amir","s":"2016-10-01"},{"n":"Numirah Hassan","p":"Sr","b":"Edmonton","r":"Teacher","s":"2022-09-03"},{"n":"Nusrat Ahmed","p":"Sr","b":"Enfield","r":"Teacher","s":"2026-04-26"},{"n":"Omer Samdani","p":"Br","b":"Finchley","r":"Lead Admin","s":"2016-01-15"},{"n":"Raed Eifan","p":"Br","b":"Enfield","r":"Admin","s":"2025-03-22"},{"n":"Rayaan Kaderia","p":"Br","b":"Enfield","r":"Teacher","s":"2023-09-02"},{"n":"Riyad Islam","p":"Br","b":"Edmonton","r":"Admin","s":"2021-09-04"},{"n":"Riyad Uddin","p":"Br","b":"Enfield","r":"Teacher","s":"2022-11-05"},{"n":"Ruzeequa Abdhul Hameed","p":"Sr","b":"Finchley","r":"Teacher","s":"2018-09-22"},{"n":"Saadath Ali","p":"Sr","b":"Edmonton","r":"Teacher","s":"2021-09-04"},{"n":"Salsabeel Qamar","p":"Sr","b":"Slough","r":"Teacher","s":"2026-03-28"},{"n":"Samiha Hai","p":"Sr","b":"Harlow","r":"Teacher","s":"2024-09-14"},{"n":"Samira Ahmed","p":"Sr","b":"Enfield","r":"Teacher","s":"2022-01-23"},{"n":"Sana Ali","p":"Sr","b":"Edmonton","r":"Teacher","s":"2025-11-01"},{"n":"Seena Hussain","p":"Br","b":"Finchley","r":"Teacher","s":"2016-01-08"},{"n":"Sofiean Hussain","p":"Br","b":"Finchley","r":"Deputy Amir","s":"2010-09-01"},{"n":"Sophia Ganee","p":"Sr","b":"Enfield","r":"Teacher","s":"2026-09-05"},{"n":"Sufyaan Kaderia","p":"Br","b":"Enfield","r":"Teacher","s":"2025-11-01"},{"n":"Sulayman Azad","p":"Br","b":"Slough","r":"Teacher","s":"2025-11-01"},{"n":"Sumayyah Ahmed","p":"Sr","b":"Enfield","r":"Teacher","s":"2022-09-03"},{"n":"Sumayyah Khan","p":"Sr","b":"Harlow","r":"Teacher","s":"2025-09-06"},{"n":"Syed Ali","p":"Br","b":"Edmonton","r":"Teacher","s":"2023-09-09"},{"n":"Tanzim Khan","p":"Sr","b":"Finchley","r":"Teacher","s":"2015-09-28"},{"n":"Tasnia Hussin","p":"Sr","b":"Edmonton","r":"Teacher","s":"2022-09-03"},{"n":"Thanisha Amin","p":"Sr","b":"Enfield","r":"Teacher","s":"2026-09-05"},{"n":"Umar Haroon","p":"Br","b":"Edmonton","r":"Teacher","s":"2013-09-01"},{"n":"Uthman Ahmed","p":"Br","b":"Harlow","r":"Teacher","s":"2025-02-15"},{"n":"Uzma Ghulam-Rabbani","p":"Sr","b":"Edmonton","r":"Teacher","s":"2008-01-09"},{"n":"Waliur Rahman","p":"Br","b":"Harlow","r":"Deputy Amir","s":"2004-07-01"},{"n":"Yasmeen Umar","p":"Sr","b":"Edmonton","r":"Teacher","s":"2000-08-01"},{"n":"Yousra Rahman","p":"Sr","b":"Slough","r":"Teacher","s":"2026-09-05"},{"n":"Zaid Tarapuri","p":"Br","b":"","r":"Support Staff","s":"2013-08-02"},{"n":"Zainab Abdhul Hameed","p":"Sr","b":"Finchley","r":"Teacher","s":"2022-09-17"},{"n":"Zainab Hassan","p":"Sr","b":"Harlow","r":"Teacher","s":"2016-09-17"},{"n":"Zakariya Kajee","p":"Br","b":"Enfield","r":"Deputy Amir","s":"2012-09-01"},{"n":"Zaki Iqbal","p":"Br","b":"Harlow","r":"Admin","s":"2026-05-17"},{"n":"Zoha Malik","p":"Sr","b":"Slough","r":"Teacher","s":"2025-09-06"},{"n":"Zohora Ahmed","p":"Sr","b":"Edmonton","r":"Teacher","s":"2019-09-07"}];
+const EMP_ROLES = ["Teacher","Support Staff"], REV_ROLES = ["Amir","Deputy Amir","Executive Head"];
+function staffFor(roles){ const a=STAFF.filter(x=>roles.includes(x.r)), b=STAFF.filter(x=>!roles.includes(x.r)); return a.concat(b); }
+function matches(item,q){ const words=item.n.toLowerCase().split(/[\s-]+/); return q.toLowerCase().split(/\s+/).filter(Boolean).every(t=>words.some(w=>w.startsWith(t))); }
+function hi(name,q){ const toks=q.toLowerCase().split(/\s+/).filter(Boolean); return name.split(/(\s+)/).map(w=>{ const t=toks.find(t=>w.toLowerCase().startsWith(t)); return t?`<mark>${esc(w.slice(0,t.length))}</mark>${esc(w.slice(t.length))}`:esc(w); }).join(""); }
+const combos={};
+const ROLE_LABEL={"Amir":"Head of Branch","Deputy Amir":"Deputy Head"};
+function setupCombo(id,roles,onPick,only){
+  if(combos[id]) return; const inp=$(id), list=$(id+"-list"); let items=[], act=-1;
+  const close=()=>{ list.hidden=true; inp.setAttribute("aria-expanded","false"); inp.removeAttribute("aria-activedescendant"); act=-1; };
+  const paint=()=>{ list.querySelectorAll("li[data-i]").forEach((li,i)=>{ li.setAttribute("aria-selected",i===act); if(i===act){ inp.setAttribute("aria-activedescendant",li.id); li.scrollIntoView({block:"nearest"}); } }); };
+  const open=()=>{ const q=inp.value.trim(); if(!q){ close(); return; }
+    items=(only?STAFF.filter(x=>roles.includes(x.r)):staffFor(roles)).filter(x=>matches(x,q)).slice(0,8);
+    list.innerHTML = items.length ? items.map((x,i)=>`<li role="option" id="${id}-o${i}" data-i="${i}"><b>${hi(x.n,q)}</b><small>${esc([ROLE_LABEL[x.r]||x.r,x.b].filter(Boolean).join(" · "))}</small></li>`).join("")
+      : `<li class="none">${only?"No Head, Deputy Head or Executive Head by that name.":"No match in the Staff Database."} You can still type the name.</li>`;
+    list.hidden=false; inp.setAttribute("aria-expanded","true"); act=items.length?0:-1; paint(); };
+  const pick=i=>{ const x=items[i]; if(!x) return; inp.value=x.n; inp.dispatchEvent(new Event("input")); close(); onPick&&onPick(x); };
+  inp.addEventListener("input",e=>{ if(e.isTrusted) open(); });
+  inp.addEventListener("focus",open);
+  inp.addEventListener("keydown",e=>{ if(list.hidden) return;
+    if(e.key==="ArrowDown"){ e.preventDefault(); act=Math.min(items.length-1,act+1); paint(); }
+    else if(e.key==="ArrowUp"){ e.preventDefault(); act=Math.max(0,act-1); paint(); }
+    else if(e.key==="Enter"&&act>=0){ e.preventDefault(); pick(act); }
+    else if(e.key==="Escape"){ close(); } });
+  inp.addEventListener("blur",()=>setTimeout(close,120));
+  list.addEventListener("mousedown",e=>e.preventDefault());
+  list.addEventListener("click",e=>{ const li=e.target.closest("li[data-i]"); if(li) pick(+li.dataset.i); });
+  combos[id]=true;
+}
+function fillFrom(x){ const done=[];
+  const put=(f,v)=>{ if(!v) return; S[f]=v; $(f).value=v; };
+  if(x.b){ put("branch",x.b); done.push("branch"); }
+  if(x.r){ put("role",x.r); done.push("job title"); }
+  if(x.s){ put("startDate",x.s); done.push("start date"); if(!S.endDate){ put("endDate",addMonths(x.s,6)); } }
+  save(); renderDates(); renderWarn();
+  if(done.length) setStatus(`Filled in ${done.join(", ").replace(/, ([^,]*)$/," and $1")} from the Staff Database. Check they're right.`,"ok"); }
+function boot(){ AREAS=pickAreas(); bindFields(); renderKind(); renderMail(); renderDates(); renderAreas(); renderScores(); renderObjs(); renderStage(); resetUI(); setupCombo("empName",EMP_ROLES,fillFrom); setupCombo("reviewer",REV_ROLES,null,true); pads.sigMgr.size(); pads.sigEmp.size(); }
+const d=load(); if(d){ S=Object.assign(fresh(),d); }
+boot(); if(d) setStatus("Picked up your review where you left off.","ok");
+})();
+</script>
