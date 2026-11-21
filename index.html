@@ -37,7 +37,7 @@ p{margin:0}
 .muted{color:var(--muted)}
 .small{font-size:.86rem}
 header.top{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
-.logo{background:#fff;border-radius:8px;padding:6px 10px;display:flex;align-items:center;border:1px solid var(--line)}
+.logo{background:#fff;border-radius:8px;padding:6px 10px;display:flex;align-items:center;border:1px solid var(--line);order:2;margin-left:auto;align-self:flex-start;margin-top:-4px}
 .logo img{height:34px;width:auto;display:block}
 .wordmark{font-family:var(--f-display);font-weight:800;color:#11695a;font-size:1rem}
 .titles{display:grid;gap:2px;min-width:0;flex:1}
@@ -101,6 +101,7 @@ input[type=email]{font:inherit;color:var(--ink);background:var(--bg);border:1px 
 .status{flex:1;min-width:170px;font-size:.85rem;color:var(--muted)}
 .status.err{color:var(--bad)} .status.ok{color:var(--good)}
 @media (prefers-reduced-motion:no-preference){.stage,.chip span,button,.oc{transition:background .15s,border-color .15s}}
+@media (max-width:520px){header.top{flex-wrap:nowrap;align-items:flex-start}.logo{padding:4px 7px;margin-top:4px}.logo img{height:20px}}
 .combo{position:relative;min-width:0}
 .combo ul{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:20;margin:0;padding:4px;list-style:none;background:var(--surface);border:1px solid var(--line);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.14);max-height:260px;overflow-y:auto}
 .combo li{display:grid;gap:1px;padding:8px 10px;border-radius:6px;cursor:pointer;font-weight:400}
@@ -508,7 +509,7 @@ function buildPdf(){
   y+=42; para("The employee's signature confirms the meeting took place and they have received a copy. It does not mean they agree with every rating; their comments are recorded above.",8.5,C.muted,false);
 
   const n=doc.getNumberOfPages();
-  for(let i=1;i<=n;i++){ doc.setPage(i); font(7.5,false); tc(C.muted); doc.text(`Safar Academy · ${S.kind==="probation"?"Probation":"Performance"} review ·${S.empName||""} · ${fmt(S.reviewDate)}`,M,H-8); doc.text(`Page ${i} of ${n}`,W-M,H-8,{align:"right"}); }
+  for(let i=1;i<=n;i++){ doc.setPage(i); font(7.5,false); tc(C.muted); doc.text(`Safar Academy · ${S.kind==="probation"?"Probation":"Performance"} review · ${S.empName||""} · ${fmt(S.reviewDate)}`,M,H-8); doc.text(`Page ${i} of ${n}`,W-M,H-8,{align:"right"}); }
   return doc;
 }
 let downloads=null;
@@ -517,12 +518,12 @@ $("makePdf").onclick=async()=>{
   if(!window.jspdf){ setStatus("The PDF tool didn't load. Check your connection and reload.","err"); return; }
   const miss=[]; if(!S.empName.trim()) miss.push("employee name"); if(!S.reviewer.trim()) miss.push("reviewer");
   if(miss.length){ setStatus(`Add the ${miss.join(" and ")} in section 1 first.`,"err"); $(S.empName.trim()?"reviewer":"empName").focus(); return; }
-  if(!downloads){ setStatus("Downloads aren't available in this view. Open the page on claude.ai in a browser or the Claude app.","err"); return; }
   const btn=$("makePdf"); btn.disabled=true; setStatus("Building the PDF…");
   try{
-    const blob=buildPdf().output("blob");
+    const pdf=buildPdf();
     const fname=`${S.kind==="probation"?"Probation":"Performance"}-Review_${S.empName.trim().replace(/[^\w\- ]+/g,"").replace(/\s+/g,"-")}_${S.stage}_${S.reviewDate||today()}.pdf`;
-    await downloads.save({filename:fname,data:blob});
+    if(downloads) await downloads.save({filename:fname,data:pdf.output("blob")});
+    else pdf.save(fname);
     setStatus(`Saved ${fname}. Email it to ${S.empName.split(" ")[0]} and keep a copy in their staff file.`,"ok");
   }catch(e){ const c=e&&e.code;
     if(c==="declined") setStatus("Download cancelled. Tap the button again when ready.");
