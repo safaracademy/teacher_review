@@ -1,4 +1,6 @@
+<meta charset="utf-8">
 <title>Safar Teacher Review</title>
+<meta name="robots" content="noindex, nofollow">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -110,7 +112,39 @@ input[type=email]{font:inherit;color:var(--ink);background:var(--bg);border:1px 
 .combo li mark{background:var(--accent-soft);color:inherit;border-radius:2px}
 .combo li[aria-selected="true"]{background:var(--accent-soft)}
 .combo li.none{cursor:default;color:var(--muted);font-size:.85rem}
+[hidden]{display:none!important}
+/* 'i' explainer buttons */
+.info{margin-left:auto;align-self:center;flex:none;width:28px;height:28px;padding:0;border-radius:50%;font-family:Georgia,serif;font-style:italic;font-weight:700;font-size:.95rem;line-height:1;color:var(--accent);border-color:var(--accent);background:transparent}
+.info[aria-expanded="true"]{background:var(--accent);color:var(--accent-ink)}
+.infoNote{background:var(--accent-soft);border-radius:8px;padding:10px 12px;font-size:.88rem;display:grid;gap:6px}
+.infoNote[hidden]{display:none}
+.infoNote ul{margin:0;padding-left:18px;display:grid;gap:4px}
+.tick{display:flex;gap:10px;align-items:flex-start;font-weight:600;font-size:.9rem;cursor:pointer}
+.tick input{margin-top:3px;accent-color:var(--accent);width:18px;height:18px;flex:none}
+.tick .h{display:block;font-weight:400;color:var(--muted);font-size:.82rem}
+.subbox{border:1px solid var(--line);border-radius:8px;padding:12px;display:grid;gap:12px}
+.subbox[hidden]{display:none}
+/* Password screen: covers the form until the staff list is unlocked */
+#lock{position:fixed;inset:0;z-index:1000;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px}
+#lock[hidden]{display:none}
+#lock form{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:24px;width:100%;max-width:340px;display:grid;gap:12px}
+#lock h1{margin:0;font-size:1.25rem;color:var(--ink)}
+#lock p{margin:0;color:var(--muted);font-size:.95rem}
+#lock input{font:inherit;font-size:1.1rem;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);letter-spacing:.15em}
+#lock button{font:inherit;font-weight:700;padding:10px 12px;border:0;border-radius:8px;background:var(--accent);color:#fff;cursor:pointer}
+#lock button:disabled{opacity:.6;cursor:default}
+#lockMsg{min-height:1.2em;color:var(--bad);font-size:.9rem}
 </style>
+
+<div id="lock">
+  <form id="lockForm" autocomplete="off">
+    <h1>Safar Teacher Review</h1>
+    <p>Enter the password to open the form.</p>
+    <input id="lockPw" type="password" inputmode="numeric" aria-label="Password" autofocus required>
+    <button type="submit" id="lockBtn">Unlock</button>
+    <div id="lockMsg" role="alert"></div>
+  </form>
+</div>
 
 <div class="wrap">
   <header class="top">
@@ -136,7 +170,11 @@ input[type=email]{font:inherit;color:var(--ink);background:var(--bg);border:1px 
   </details>
 
   <section class="panel" aria-labelledby="h1d">
-    <h2 id="h1d"><span class="n">1</span>Employee and review details</h2>
+    <h2 id="h1d"><span class="n">1</span>Employee and review details<button type="button" class="info" aria-expanded="false" aria-controls="info1" aria-label="What this section is for">i</button></h2>
+    <div class="infoNote" id="info1" hidden><p><b>Who, when and who was there.</b></p><ul>
+<li>Before any meeting that could end in extending or ending probation, offer the employee the right to bring a work colleague or trade union rep. If they ask for one during the meeting, stop and rearrange. Refusing can lead to an award of up to 2 weeks' pay.</li>
+<li>Have someone take notes. Keep one senior person out of the review so they can hear an appeal if needed.</li>
+<li>The 6-month date matters: from 1 January 2027, staff can claim unfair dismissal after 6 months' service.</li></ul></div>
     <div class="grid2">
       <label class="f">Review type<span class="h">Probation for new starters, termly for everyone else</span><select id="kind"><option value="probation">Probation review</option><option value="performance">Termly performance review</option></select></label>
       <label class="f">Job title<span class="h">e.g. Teacher, Memorisation Teacher</span><input type="text" id="role" autocomplete="off"></label>
@@ -147,20 +185,30 @@ input[type=email]{font:inherit;color:var(--ink);background:var(--bg);border:1px 
       <label class="f" id="endWrap">Probation end date<span class="h" id="endHint">Set the start date to fill this in</span><input type="date" id="endDate"></label>
       <label class="f">Date of this review<input type="date" id="reviewDate"></label>
       <label class="f">Lesson observed on<span class="h">Date of the observation this review draws on</span><input type="date" id="obsDate"></label>
-      <label class="f">Others present<span class="h">e.g. Deputy, Executive Head, companion</span><input type="text" id="present"></label>
+      <label class="f">Others present<span class="h">e.g. Deputy, Executive Head, note-taker</span><input type="text" id="present"></label>
+      <label class="f">Right to be accompanied<span class="h">A work colleague or trade union rep. Offer it before the meeting</span><select id="accomp"><option value="">Choose</option><option>Offered, declined</option><option>Offered, accompanied</option><option>Not offered</option></select></label>
+      <label class="f" id="companionWrap">Companion's name and role<input type="text" id="companion"></label>
     </div>
     <p class="small" id="sixMonth"></p>
   </section>
 
   <section class="panel" aria-labelledby="h2d">
-    <h2 id="h2d"><span class="n">2</span>Teaching standards</h2>
+    <h2 id="h2d"><span class="n">2</span>Teaching standards<button type="button" class="info" aria-expanded="false" aria-controls="info2" aria-label="What this section is for">i</button></h2>
+    <div class="infoNote" id="info2" hidden><p><b>Judge the teaching against Safar's standards, on evidence.</b></p><ul>
+<li>Rate only what you have seen, and write dates and examples in the evidence box. A clear written record is what shows a decision was fair.</li>
+<li>Hold every new teacher to the same standard. Check how other probationers were judged.</li>
+<li>Anything "Partly" or "Not met" needs an objective in section 4, so the teacher knows exactly what to fix.</li></ul></div>
     <p class="small" id="roleLabel" style="font-weight:600"></p>
     <p class="muted small">Rate each standard from what you have seen. Use "Not yet seen" if you haven't had the chance to see it yet, and "N/A" if it doesn't apply to this teacher's class or branch. Neither counts towards the score. Anything "Partly" or "Not met" needs a note and an objective in section 4.</p>
     <div id="areas" style="display:grid;gap:18px"></div>
   </section>
 
   <section class="panel" aria-labelledby="h3d">
-    <h2 id="h3d"><span class="n">3</span>Attendance, timekeeping and conduct</h2>
+    <h2 id="h3d"><span class="n">3</span>Attendance, timekeeping and conduct<button type="button" class="info" aria-expanded="false" aria-controls="info3" aria-label="What this section is for">i</button></h2>
+    <div class="infoNote" id="info3" hidden><p><b>Attendance and conduct, from the records.</b></p><ul>
+<li>Use the timesheet and absence records rather than memory.</li>
+<li>Don't count absence linked to disability, pregnancy, maternity or other family leave. That could be discrimination, which is protected from day one.</li>
+<li>Keep notes to dates and facts.</li></ul></div>
     <div class="grid2">
       <label class="f">Days absent since start<input type="number" min="0" step="0.5" id="absDays" inputmode="decimal"></label>
       <label class="f">Times late or signed in late<input type="number" min="0" id="lateCount" inputmode="numeric"></label>
@@ -170,7 +218,11 @@ input[type=email]{font:inherit;color:var(--ink);background:var(--bg);border:1px 
   </section>
 
   <section class="panel" aria-labelledby="h4d">
-    <h2 id="h4d"><span class="n">4</span>Objectives and support</h2>
+    <h2 id="h4d"><span class="n">4</span>Objectives and support<button type="button" class="info" aria-expanded="false" aria-controls="info4" aria-label="What this section is for">i</button></h2>
+    <div class="infoNote" id="info4" hidden><p><b>What good looks like, by when, and the help you'll give.</b></p><ul>
+<li>If performance isn't there yet, the objectives and support are the fair chance to improve. A tribunal would expect to see them.</li>
+<li>Where the issue is performance rather than conduct, assume the teacher is trying. Explain where they are going wrong and consider whether they need more time.</li>
+<li>Consider reasonable adjustments if the employee has a disability.</li></ul></div>
     <p class="muted small">Specific and measurable, each with a date. At the next review, record progress.</p>
     <div id="objs" style="display:grid;gap:10px"></div>
     <div><button type="button" id="addObj">Add objective</button></div>
@@ -179,26 +231,50 @@ input[type=email]{font:inherit;color:var(--ink);background:var(--bg);border:1px 
   </section>
 
   <section class="panel" aria-labelledby="h5d">
-    <h2 id="h5d"><span class="n">5</span>Summary</h2>
+    <h2 id="h5d"><span class="n">5</span>Summary<button type="button" class="info" aria-expanded="false" aria-controls="info5" aria-label="What this section is for">i</button></h2>
+    <div class="infoNote" id="info5" hidden><p><b>The overall picture, and the employee's side.</b></p><ul>
+<li>Remind the employee of any earlier conversations about concerns, even informal ones, and record when they happened. Concerns shouldn't come as a surprise at the review.</li>
+<li>Give the employee the chance to respond to each concern and to raise anything you should take into account, such as health or personal circumstances. Write it in their words.</li></ul></div>
     <div class="scoreboard" id="scores"></div>
     <label class="f">Key strengths<textarea id="strengths"></textarea></label>
     <label class="f">Areas to improve<textarea id="improve"></textarea></label>
+    <label class="f">Concerns raised before this review<span class="h">Dates, how each was raised (chat, email, letter) and by whom. Write "None" if there were none</span><textarea id="priorConcerns"></textarea></label>
     <label class="f">Employee's comments<span class="h">In their own words: how they feel it is going, and any support they want</span><textarea id="empComments"></textarea></label>
+    <label class="f">Employee's response to any concerns<span class="h">Their side of each concern, and anything they ask you to take into account (health, personal circumstances)</span><textarea id="empResponse"></textarea></label>
   </section>
 
   <section class="panel" aria-labelledby="h6d">
-    <h2 id="h6d"><span class="n">6</span>Outcome</h2>
+    <h2 id="h6d"><span class="n">6</span>Outcome<button type="button" class="info" aria-expanded="false" aria-controls="info6" aria-label="What this section is for">i</button></h2>
+    <div class="infoNote" id="info6" hidden><p><b>The decision, made fairly.</b></p><ul>
+<li>If the outcome could be extending or ending probation, hear the employee out, then adjourn before deciding. Don't announce a decision on the spot. Take HR advice first.</li>
+<li>Extending is an option when there are concerns but the teacher shows potential. Set clear objectives and a new review date.</li>
+<li>If probation isn't confirmed, consider whether another role would suit them. Confirm the decision in writing with their notice and their right to appeal within 5 working days to someone not involved.</li></ul></div>
     <div class="outcomes" id="outcomes"></div>
-    <div id="extendBox" class="grid2" hidden>
-      <label class="f">Extended to<input type="date" id="extendTo"></label>
+    <label class="tick" id="adjWrap" hidden><input type="checkbox" id="adjourned"><span>I adjourned the meeting before making this decision<span class="h">Hear the employee out, take a break to consider, then decide</span></span></label>
+    <div class="grid2">
+      <label class="f" id="extendBox" hidden>Extended to<input type="date" id="extendTo"></label>
       <label class="f">Next review date<input type="date" id="nextReview"></label>
+    </div>
+    <div class="subbox" id="notBox" hidden>
+      <p class="small" style="font-weight:700">Notice and appeal</p>
+      <div class="grid2">
+        <label class="f">Notice period (weeks)<span class="h">Check the contract</span><input type="number" min="0" step="1" id="noticeWeeks" inputmode="numeric"></label>
+        <label class="f">Notice<select id="noticePay"><option value="">Choose</option><option>Worked</option><option>Paid in lieu</option></select></label>
+        <label class="f">Last day of employment<input type="date" id="lastDay"></label>
+        <label class="f">Appeal goes to<span class="h">Someone senior who wasn't involved in this review</span><input type="text" id="appealTo"></label>
+      </div>
+      <label class="f">Other roles considered<span class="h">Is there another role at Safar that would suit them better?</span><textarea id="altRole"></textarea></label>
+      <p class="muted small">The employee can appeal in writing, giving their reasons, within 5 working days of receiving the decision. Outstanding holiday pay is paid with their final pay.</p>
     </div>
     <label class="f">Reasons and next steps<textarea id="outcomeNotes"></textarea></label>
     <p class="law small" id="outcomeWarn" hidden></p>
   </section>
 
   <section class="panel" aria-labelledby="h7d">
-    <h2 id="h7d"><span class="n">7</span>Sign off</h2>
+    <h2 id="h7d"><span class="n">7</span>Sign off<button type="button" class="info" aria-expanded="false" aria-controls="info7" aria-label="What this section is for">i</button></h2>
+    <div class="infoNote" id="info7" hidden><p><b>Proof the meeting happened.</b></p><ul>
+<li>The signature confirms the meeting took place and the employee has seen the form. It doesn't mean they agree.</li>
+<li>If they won't sign, note that under "Reasons and next steps" and carry on.</li></ul></div>
     <div class="grid2">
       <div style="display:grid;gap:6px;min-width:0">
         <div class="sigRow"><b class="small">Reviewer signature</b><button type="button" class="sm ghost" data-clear="sigMgr">Clear</button></div>
@@ -213,7 +289,10 @@ input[type=email]{font:inherit;color:var(--ink);background:var(--bg);border:1px 
   </section>
 
   <section class="panel" aria-labelledby="h8d">
-    <h2 id="h8d"><span class="n">8</span>Email to the staff member</h2>
+    <h2 id="h8d"><span class="n">8</span>Email to the staff member<button type="button" class="info" aria-expanded="false" aria-controls="info8" aria-label="What this section is for">i</button></h2>
+    <div class="infoNote" id="info8" hidden><p><b>The outcome in writing.</b></p><ul>
+<li>This email, with the PDF attached, is the written confirmation of the outcome. Send it from the branch account.</li>
+<li>Save a copy in the staff file. If there's ever a dispute, this paper trail is what shows a fair process was followed.</li></ul></div>
     <ol class="mailSteps">
       <li>Tap <b>Download PDF</b> at the bottom of the screen.</li>
       <li>Copy the subject and message below into a new email from the branch account.</li>
@@ -239,7 +318,7 @@ input[type=email]{font:inherit;color:var(--ink);background:var(--bg);border:1px 
 </div></div>
 
 <script>
-(() => {
+window.__startApp = (STAFF) => {
 const TEACHER_AREAS = [
  {id:"plan", t:"Lesson preparation and delivery", items:[
   ["Prepares every lesson in advance (muṭālaʿah) and follows the Safar syllabus","INSET Sept 2025"],
@@ -289,10 +368,10 @@ const CONDUCT = [
 ];
 const RATE = [["met","Met","good"],["partly","Partly","warn"],["not","Not met","bad"],["na","Not yet seen","na"],["nap","N/A","na"]];
 const STAGESETS = {
- probation:[["final","Week 12","Probation review"],["ext","If extended","Follow-up review"]],
+ probation:[["mid","Week 6","Interim review"],["final","Week 12","Probation review"],["ext","If extended","Follow-up review"]],
  performance:[["autumn","Week 12","Autumn review"],["spring","Week 26","Spring review"],["summer","Week 37–38","Annual review"]]
 };
-const STAGES = {final:"Week 12 probation review", ext:"Probation follow-up review (extended probation)",
+const STAGES = {mid:"Week 6 interim probation review", final:"Week 12 probation review", ext:"Probation follow-up review (extended probation)",
  autumn:"Week 12 autumn review", spring:"Week 26 spring review", summer:"Week 37–38 annual review"};
 const PERF = [["good","Performing well. Keep it up."],["dev","Some standards to work on. Development objectives agreed in section 4."],["pip","Serious concerns. Formal performance improvement plan, with HR advice."]];
 const OUTCOMES = {
@@ -315,7 +394,8 @@ const $ = id => document.getElementById(id);
 const fresh = () => ({kind:"probation", stage:"final", empName:"", role:"Teacher", obsDate:"", branch:"", reviewer:"", startDate:"", endDate:"",
   reviewDate:today(), present:"", ratings:{}, notes:{}, absDays:"", lateCount:"", conduct:{}, conductNotes:"",
   objs:[{id:uid(),what:"",support:"",due:"",progress:""}], training:"", support:"", strengths:"", improve:"",
-  empComments:"", empEmail:"", mailBody:"", mailEdited:false, outcome:"", extendTo:"", nextReview:"", outcomeNotes:"", sigMgr:"", sigEmp:""});
+  empComments:"", empEmail:"", mailBody:"", mailEdited:false, outcome:"", extendTo:"", nextReview:"", outcomeNotes:"", sigMgr:"", sigEmp:"",
+  accomp:"", companion:"", priorConcerns:"", empResponse:"", adjourned:false, noticeWeeks:"", noticePay:"", lastDay:"", appealTo:"", altRole:""});
 let S = fresh();
 
 /* draft storage (best effort) */
@@ -329,14 +409,22 @@ function setStatus(m,k){ const el=$("status"); el.textContent=m; el.className="s
 $("logoImg").onerror=()=>{ $("logoImg").hidden=true; $("wordmark").hidden=false; };
 
 /* simple fields */
-const FIELDS=["kind","empEmail","empName","role","obsDate","branch","reviewer","startDate","endDate","reviewDate","present","absDays","lateCount","conductNotes","training","support","strengths","improve","empComments","extendTo","nextReview","outcomeNotes"];
+const FIELDS=["kind","empEmail","empName","role","obsDate","branch","reviewer","startDate","endDate","reviewDate","present","absDays","lateCount","conductNotes","training","support","strengths","improve","empComments","extendTo","nextReview","outcomeNotes","accomp","companion","priorConcerns","empResponse","noticeWeeks","noticePay","lastDay","appealTo","altRole"];
 function bindFields(){
   FIELDS.forEach(f=>{ const el=$(f); el.value=S[f]??""; el.oninput=()=>{ S[f]=el.value;
     if(f==="startDate"&&S.startDate&&(!S.endDate||S.endDate===S.autoEnd)){ S.endDate=S.autoEnd=addWeeks(S.startDate,12); $("endDate").value=S.endDate; }
-    if(f==="kind"){ S.stage=STAGESETS[S.kind][0][0]; renderKind(); renderStage(); setStatus(S.kind==="probation"?"Probation review selected.":"Termly performance review selected.","ok"); }
+    if(f==="kind"){ S.stage=S.kind==="probation"?"final":STAGESETS[S.kind][0][0]; renderKind(); renderStage(); setStatus(S.kind==="probation"?"Probation review selected.":"Termly performance review selected.","ok"); }
     
-    save(); renderDates(); renderWarn(); }; });
+    if(f==="accomp") renderCompanion();
+    save(); renderDates(); renderOutcome(); }; });
 }
+function bindExtras(){
+  const a=$("adjourned"); a.checked=!!S.adjourned; a.onchange=()=>{ S.adjourned=a.checked; save(); renderWarn(); };
+  document.querySelectorAll(".info").forEach(b=>b.onclick=()=>{ const n=$(b.getAttribute("aria-controls")); const open=b.getAttribute("aria-expanded")!=="true";
+    b.setAttribute("aria-expanded",String(open)); n.hidden=!open; });
+  renderCompanion();
+}
+function renderCompanion(){ $("companionWrap").hidden = S.accomp!=="Offered, accompanied"; }
 function renderKind(){ const p=S.kind==="probation";
   $("pageTitle").textContent = p ? "Teacher Probation Review" : "Teacher Performance Review";
   $("lawBox").hidden=!p; $("endWrap").hidden=!p; renderDates(); }
@@ -401,14 +489,24 @@ function renderStage(){
   $("outcomes").querySelectorAll("input").forEach(r=>r.onchange=()=>{ S.outcome=r.value; save(); renderOutcome(); });
   renderOutcome();
 }
-function renderOutcome(){ $("extendBox").hidden = S.outcome!=="extend"; renderWarn(); }
+function renderOutcome(){ $("extendBox").hidden = S.outcome!=="extend"; $("notBox").hidden = S.outcome!=="notconfirm";
+  $("adjWrap").hidden = !["extend","notconfirm","pip"].includes(S.outcome); renderWarn(); }
 function renderWarn(){ const w=$("outcomeWarn"); const six=addMonths(S.startDate,6); const past=six&&S.reviewDate&&S.reviewDate>=six;
   let msg="";
   if(S.outcome==="pip") msg="Before starting a formal improvement plan: check the concerns were raised earlier with support offered, set clear targets and a review date, follow the disciplinary or capability policy, and take HR advice. The employee has the right to be accompanied at formal meetings.";
   else if(S.kind!=="probation") msg="";
   else if(S.outcome==="notconfirm") msg="Before ending employment: check the notice period in the contract, make sure concerns were raised earlier in writing with support offered, and take HR or legal advice"+(past?". The employee has 6 months' service by this date, so from 1 January 2027 they can claim unfair dismissal.":".");
   else if(S.outcome==="extend"&&past) msg="Extending does not delay unfair dismissal rights. From 1 January 2027, staff with 6 months' service are protected even while probation continues.";
-  w.hidden=!msg; w.textContent=msg; }
+  const serious=["extend","notconfirm","pip"].includes(S.outcome), extra=[];
+  if(serious){
+    if(!S.accomp||S.accomp==="Not offered") extra.push("Offer the right to be accompanied (section 1). If the employee wants a companion, rearrange the meeting.");
+    if(!S.adjourned) extra.push("Adjourn the meeting before deciding, and don't announce the decision on the spot.");
+    if(!String(S.priorConcerns||"").trim()) extra.push("Record when the concerns were first raised (section 5).");
+    if(!String(S.empResponse||"").trim()) extra.push("Record the employee's response to the concerns (section 5).");
+  }
+  if(S.outcome==="notconfirm"&&!String(S.appealTo||"").trim()) extra.push("Name who the appeal goes to.");
+  if(extra.length) msg=(msg?msg+"\n\nStill to do:\n":"Still to do:\n")+extra.map(x=>"• "+x).join("\n");
+  w.hidden=!msg; w.textContent=msg; w.style.whiteSpace="pre-line"; }
 
 /* signatures */
 const pads={};
@@ -440,13 +538,15 @@ let logoData=null;
 { const im=new Image(); im.onload=()=>{ logoData={src:im.src,w:im.naturalWidth,h:im.naturalHeight}; }; im.src=document.getElementById("logoImg").src; }
 const C={ink:[22,32,29],muted:[91,105,100],line:[211,218,215],accent:[17,105,90],good:[31,122,67],warn:[162,99,0],bad:[179,38,30],soft:[243,245,244]};
 const RLABEL={met:["Met",C.good],partly:["Partly",C.warn],not:["Not met",C.bad],na:["Not yet seen",C.muted],nap:["N/A",C.muted]};
+const pdfSafe=t=>String(t??"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[ʿʾ‘’]/g,"'").replace(/[“”]/g,'"').replace(/[–—]/g,"-");
+function accompText(){ return S.accomp ? S.accomp+(S.accomp==="Offered, accompanied"&&S.companion?" ("+S.companion+")":"") : ""; }
 function buildPdf(){
   const {jsPDF}=window.jspdf; const doc=new jsPDF({unit:"mm",format:"a4",compress:true});
   const W=210,H=297,M=15,CW=W-2*M; let y=M;
   const tc=c=>doc.setTextColor(...c), fc=c=>doc.setFillColor(...c), dc=c=>doc.setDrawColor(...c);
   const font=(s,b)=>{ doc.setFont("helvetica",b?"bold":"normal"); doc.setFontSize(s); };
   const need=h=>{ if(y+h>H-18){ doc.addPage(); y=M; } };
-  const para=(txt,size,col,bold,indent=0)=>{ font(size,bold); tc(col); const lh=size*0.43; doc.splitTextToSize(String(txt),CW-indent).forEach(l=>{ need(lh); doc.text(l,M+indent,y+lh*0.8); y+=lh; }); };
+  const para=(txt,size,col,bold,indent=0)=>{ font(size,bold); tc(col); const lh=size*0.43; doc.splitTextToSize(pdfSafe(txt),CW-indent).forEach(l=>{ need(lh); doc.text(l,M+indent,y+lh*0.8); y+=lh; }); };
   const heading=t=>{ need(14); y+=3; font(12.5,true); tc(C.accent); doc.text(t,M,y+4); y+=6.5; dc(C.accent); doc.setLineWidth(0.4); doc.line(M,y,M+CW,y); y+=4; };
   const block=(label,txt)=>{ if(!String(txt||"").trim()) return; need(10); font(8,true); tc(C.muted); doc.text(label.toUpperCase(),M,y+3); y+=5; para(txt.trim(),10,C.ink,false); y+=3; };
 
@@ -457,9 +557,9 @@ function buildPdf(){
   y+=20; font(19,true); tc(C.ink); doc.text(P?"Probation Review":"Performance Review",M,y); y+=7;
   font(11,false); tc(C.accent); doc.text(STAGES[S.stage],M,y); y+=8;
 
-  const det=P ? [["Employee",S.empName],["Job title",S.role],["Branch",S.branch],["Reviewer",S.reviewer],["Start date",fmt(S.startDate)],["Probation ends",fmt(S.endDate)],["Review date",fmt(S.reviewDate)],["Lesson observed",fmt(S.obsDate)],["6 months' service",fmt(addMonths(S.startDate,6))],["Others present",S.present]]
-    : [["Employee",S.empName],["Job title",S.role],["Branch",S.branch],["Reviewer",S.reviewer],["Start date",fmt(S.startDate)],["Review date",fmt(S.reviewDate)],["Lesson observed",fmt(S.obsDate)],["Others present",S.present]];
-  const cw=CW/3; det.forEach((d,i)=>{ const cx=M+(i%3)*cw, cy=y+Math.floor(i/3)*12; font(7.5,true); tc(C.muted); doc.text(d[0].toUpperCase(),cx,cy); font(10,false); tc(C.ink); doc.text(doc.splitTextToSize(d[1]||"—",cw-4)[0],cx,cy+4.6); });
+  const det=P ? [["Employee",S.empName],["Job title",S.role],["Branch",S.branch],["Reviewer",S.reviewer],["Start date",fmt(S.startDate)],["Probation ends",fmt(S.endDate)],["Review date",fmt(S.reviewDate)],["Lesson observed",fmt(S.obsDate)],["6 months' service",fmt(addMonths(S.startDate,6))],["Others present",S.present],["Accompanied",accompText()]]
+    : [["Employee",S.empName],["Job title",S.role],["Branch",S.branch],["Reviewer",S.reviewer],["Start date",fmt(S.startDate)],["Review date",fmt(S.reviewDate)],["Lesson observed",fmt(S.obsDate)],["Others present",S.present],["Accompanied",accompText()]];
+  const cw=CW/3; det.forEach((d,i)=>{ const cx=M+(i%3)*cw, cy=y+Math.floor(i/3)*12; font(7.5,true); tc(C.muted); doc.text(d[0].toUpperCase(),cx,cy); font(10,false); tc(C.ink); doc.text(doc.splitTextToSize(d[1]||"—",cw-4).slice(0,i===det.length-1?2:1),cx,cy+4.6); });
   y+=50;
 
   const t=totals(), rated=t.met+t.partly+t.not;
@@ -470,7 +570,7 @@ function buildPdf(){
   heading(`Teaching standards${S.role?": "+S.role:""}`);
   AREAS.forEach(a=>{ need(12); font(10.5,true); tc(C.ink); doc.text(a.t,M,y+4); y+=7;
     a.items.forEach(([txt],i)=>{ const v=S.ratings[a.id+"."+i]; const [lab,col]=RLABEL[v]||["Not rated",C.muted];
-      const lines=doc.splitTextToSize(txt,CW-34); const h=lines.length*4.2+2; need(h);
+      const lines=doc.splitTextToSize(pdfSafe(txt),CW-34); const h=lines.length*4.2+2; need(h);
       font(9.5,false); tc(C.ink); lines.forEach((l,j)=>doc.text(l,M+2,y+3.5+j*4.2));
       font(9,true); tc(col); doc.text(lab,M+CW,y+3.5,{align:"right"});
       dc(C.line); doc.setLineWidth(0.15); doc.line(M,y+h,M+CW,y+h); y+=h+1; });
@@ -491,12 +591,19 @@ function buildPdf(){
   block("Training completed",S.training); block("Support or adjustments",S.support);
 
   heading("Summary");
-  block("Key strengths",S.strengths); block("Areas to improve",S.improve); block("Employee's comments",S.empComments);
+  block("Key strengths",S.strengths); block("Areas to improve",S.improve); block("Concerns raised before this review",S.priorConcerns); block("Employee's comments",S.empComments); block("Employee's response to concerns",S.empResponse);
 
   heading("Outcome");
   const oc=(OUTCOMES[S.stage].find(o=>o[0]===S.outcome)||[,"No outcome selected"])[1];
   para(oc,11,C.ink,true); y+=2;
-  if(S.outcome==="extend") para(`Extended to ${fmt(S.extendTo)}. Next review ${fmt(S.nextReview)}.`,10,C.ink,false);
+  if(S.outcome==="extend") para(`Probation extended to ${fmt(S.extendTo)}.`,10,C.ink,false);
+  if(S.nextReview) para(`Next review: ${fmt(S.nextReview)}.`,10,C.ink,false);
+  if(S.adjourned&&["extend","notconfirm","pip"].includes(S.outcome)) para("The meeting was adjourned before this decision was made.",9.5,C.muted,false);
+  if(S.outcome==="notconfirm"){ y+=2;
+    const nt=[S.noticeWeeks?`Notice: ${S.noticeWeeks} week${S.noticeWeeks==1?"":"s"}${S.noticePay?", "+S.noticePay.toLowerCase():""}.`:"", S.lastDay?`Last day of employment: ${fmt(S.lastDay)}.`:"", "Outstanding holiday pay will be paid with final pay."].filter(Boolean).join(" ");
+    para(nt,10,C.ink,false); y+=1;
+    para(`Right of appeal: the employee may appeal in writing, giving their reasons, within 5 working days of receiving this decision${S.appealTo?". Send the appeal to "+S.appealTo:""}.`,10,C.ink,false); y+=2;
+    block("Other roles considered",S.altRole); }
   y+=1; block("Reasons and next steps",S.outcomeNotes);
 
   need(58); y+=4; font(8,true); tc(C.muted);
@@ -533,7 +640,7 @@ $("makePdf").onclick=async()=>{
 };
 
 /* email template (house style from the Admin Handbook) */
-const SUBJ={final:"Week 12 Probation Review", ext:"Probation Follow-Up Review", autumn:"Week 12 Autumn Review", spring:"Week 26 Spring Review", summer:"Annual Review"};
+const SUBJ={mid:"Week 6 Probation Check-In", final:"Week 12 Probation Review", ext:"Probation Follow-Up Review", autumn:"Week 12 Autumn Review", spring:"Week 26 Spring Review", summer:"Annual Review"};
 const clean=s=>String(s||"").replace(/[.,]/g,"").replace(/\s+/g," ").trim().replace(/\b\w/g,c=>c.toUpperCase());
 function mailSubject(){ return [SUBJ[S.stage]||"Review", clean(S.empName)].filter(Boolean).join(" | "); }
 function mailText(){
@@ -543,7 +650,9 @@ function mailText(){
   const OUT={
     confirm:`I'm pleased to confirm that you have passed your probation, and your role as ${S.role} is now confirmed. Thank you for all your hard work so far.`,
     extend:`As we discussed, we have agreed to extend your probation to ${S.extendTo?fmt(S.extendTo):"the date we agreed"}. The objectives and support we agreed are in the attached form, and your next review is on ${nr}.`,
-    notconfirm:`As we discussed in our meeting, your probation has not been confirmed. I will write to you separately with the details, including your notice period.`,
+    notconfirm:[`Having considered everything we discussed, including what you told me, I have decided that your probation will not be confirmed. The reasons are set out in the attached form.`,
+      S.noticeWeeks?`You are entitled to ${S.noticeWeeks==1?"1 week's":S.noticeWeeks+" weeks'"} notice${S.noticePay==="Paid in lieu"?", which will be paid in lieu":S.noticePay==="Worked"?", which you will work":""}${S.lastDay?`, and your last day of employment will be ${fmt(S.lastDay)}`:""}. Any outstanding holiday pay will be paid with your final pay.`:`I will confirm your notice period and last day separately. Any outstanding holiday pay will be paid with your final pay.`,
+      `You have the right to appeal against this decision. If you wish to appeal, please do so in writing, giving your reasons, within 5 working days of receiving this email${S.appealTo?`, addressed to ${S.appealTo}`:""}.`].join("\n\n"),
     ontrack:`You are on track, and I'm happy with how you have settled in.`,
     concerns:`As we discussed, there are some areas we need to work on. The objectives and support we agreed are in the attached form.`,
     good:`Thank you for your hard work this term. You are performing well against our teaching standards.`,
@@ -552,7 +661,8 @@ function mailText(){
   };
   const objs=S.objs.filter(o=>o.what.trim()).map(o=>`- ${o.what.trim()}${o.due?` (by ${fmt(o.due)})`:""}`);
   const parts=[
-    `Assalāmu ʿalaikum wa raḥmatullāhi wa barakātuh ${first},`,
+    `Assalāmu ʿalaikum wa raḥmatullāhi wa barakātuh`,
+    `Dear ${first},`,
     `Thank you for meeting with me${S.reviewDate?` on ${fmt(S.reviewDate)}`:""} for your ${stage}. Please find attached a signed copy of the review form for your records.`,
     OUT[S.outcome]||`Please read through the form and let me know if you have any questions.`
   ];
@@ -577,7 +687,6 @@ document.querySelectorAll("[data-copy]").forEach(b=>b.onclick=()=>{ const el=$(b
   try{ navigator.clipboard.writeText(txt).then(done,fallback); }catch(e){ fallback(); } });
 
 /* staff names: current staff from Staff Database > Employment Records (pulled 14 November 2026) */
-const STAFF = [{"n":"Abdul Aleem Ahmed","p":"Br","b":"Harlow","r":"Teacher","s":"2025-09-06"},{"n":"Abdul Haady Hassan Murshid","p":"Br","b":"Slough","r":"Teacher","s":"2024-09-07"},{"n":"Abdul Rahman Patel","p":"Br","b":"Harlow","r":"Teacher","s":"2020-09-19"},{"n":"Absar Kaisar","p":"Br","b":"Edmonton","r":"Teacher","s":"2017-09-02"},{"n":"Adam Balesaria","p":"Br","b":"Edmonton","r":"Teacher","s":"2024-09-28"},{"n":"Adam Husaunndee","p":"Br","b":"Enfield","r":"Amir","s":"2005-09-01"},{"n":"Ahsan Ali","p":"Br","b":"Slough","r":"Teacher","s":"2022-09-02"},{"n":"Ajmal Ramankhan","p":"Br","b":"Enfield","r":"Teacher","s":"2016-09-03"},{"n":"Aladeen Polat","p":"Br","b":"Edmonton","r":"Support Staff","s":"2022-10-29"},{"n":"Aliyaan Sahil","p":"Br","b":"Harlow","r":"Teacher","s":"2024-10-12"},{"n":"Altaf Bahrami","p":"Br","b":"Slough","r":"Teacher","s":"2024-01-13"},{"n":"Amaan Miah","p":"Sr","b":"Edmonton","r":"Teacher","s":"2025-09-06"},{"n":"Amila Fairoos Lebbe","p":"Sr","b":"Finchley","r":"Teacher","s":"2018-09-01"},{"n":"Amjad Shaikh","p":"Br","b":"","r":"Executive Head","s":"2005-09-01"},{"n":"Arifur Rahman","p":"Br","b":"Harlow","r":"Teacher","s":"2021-09-19"},{"n":"Atiya Esmail","p":"Sr","b":"Slough","r":"Teacher","s":"2026-09-05"},{"n":"Azizul Islam","p":"Br","b":"Harlow","r":"Teacher","s":"2025-09-06"},{"n":"Burhan Uddin","p":"Br","b":"Harlow","r":"Amir","s":"2014-09-06"},{"n":"Dahyim Karim","p":"Br","b":"Enfield","r":"Lead Admin","s":"2020-09-05"},{"n":"Faeez Aullyar","p":"Br","b":"Enfield","r":"Teacher","s":"2024-09-07"},{"n":"Faisal Samdani","p":"Br","b":"","r":"Operations & Finance Manager","s":"2015-01-03"},{"n":"Faiza Sagaf","p":"Sr","b":"Slough","r":"Teacher","s":"2026-09-05"},{"n":"Fatema Begum","p":"Sr","b":"Edmonton","r":"Teacher","s":"2025-09-06"},{"n":"Fawaaz Aullyar","p":"Br","b":"Enfield","r":"Teacher","s":"2022-09-03"},{"n":"Habib Ali","p":"Br","b":"Harlow","r":"Teacher","s":"2026-05-16"},{"n":"Hafsa Mahmood","p":"Sr","b":"Enfield","r":"Teacher","s":"2025-05-11"},{"n":"Hamida Hussain","p":"Sr","b":"Finchley","r":"Admin","s":"2022-10-01"},{"n":"Hamza Lohiya","p":"Br","b":"Enfield","r":"Teacher","s":"2026-09-05"},{"n":"Hannah Toofail","p":"Sr","b":"Enfield","r":"Teacher","s":"2024-09-07"},{"n":"Hashim Uddin","p":"Br","b":"Finchley","r":"Amir","s":"2006-09-03"},{"n":"Hussain Mulla","p":"Br","b":"Edmonton","r":"Amir","s":"2009-09-09"},{"n":"Hussna Khan","p":"Sr","b":"Finchley","r":"Teacher","s":"2026-09-05"},{"n":"Ibraheem Atif","p":"Br","b":"Enfield","r":"Teacher","s":"2023-09-02"},{"n":"Ibrahim Haroon","p":"Br","b":"Edmonton","r":"Teacher","s":"2021-09-04"},{"n":"Ikra Amin","p":"Sr","b":"Enfield","r":"Teacher","s":"2026-09-05"},{"n":"Imran Guled","p":"Br","b":"Finchley","r":"Teacher","s":"2024-09-07"},{"n":"Ishrat Naushen","p":"Sr","b":"Edmonton","r":"Teacher","s":"2020-10-24"},{"n":"Issac Ganee","p":"Br","b":"Edmonton","r":"Teacher","s":"2021-09-04"},{"n":"Jamil Mohammad","p":"Br","b":"Finchley","r":"Teacher","s":"2012-09-15"},{"n":"Kaif Hassan","p":"Br","b":"Edmonton","r":"Lead Admin","s":"2016-09-01"},{"n":"Kavid Karim","p":"Br","b":"Edmonton","r":"Admin","s":"2022-11-27"},{"n":"Kawthar Shariff","p":"Sr","b":"Enfield","r":"Teacher","s":"2022-09-03"},{"n":"Kazi Hafeez","p":"Br","b":"Edmonton","r":"Teacher","s":"2026-10-17"},{"n":"Khadijah Jahan","p":"Sr","b":"Edmonton","r":"Teacher","s":"2022-09-03"},{"n":"Lema Delara","p":"Sr","b":"Finchley","r":"Teacher","s":"2021-09-04"},{"n":"Mahfuz Kadir","p":"Br","b":"Finchley","r":"Teacher","s":"2021-09-04"},{"n":"Marwa Hamid","p":"Sr","b":"Slough","r":"Teacher","s":"2024-02-18"},{"n":"Marwah Ahmed","p":"Sr","b":"Harlow","r":"Teacher","s":"2024-09-07"},{"n":"Mayesha Ahmed","p":"Sr","b":"Harlow","r":"Teacher","s":"2016-10-09"},{"n":"Mohammed Iqbal Hussain","p":"Br","b":"Edmonton","r":"Teacher","s":"2024-09-07"},{"n":"Mohammed Shuheb Miah","p":"Br","b":"Edmonton","r":"Deputy Amir","s":"2013-01-09"},{"n":"Musa Rashid","p":"Br","b":"Edmonton","r":"Teacher","s":"2025-01-11"},{"n":"Mustafa Atif","p":"Br","b":"Enfield","r":"Teacher","s":"2024-09-07"},{"n":"Mustafa Shire","p":"Br","b":"Enfield","r":"Admin","s":"2026-09-05"},{"n":"Nageena Shujat Ali","p":"Sr","b":"Harlow","r":"Lead Admin","s":"2019-09-08"},{"n":"Nasrin Sultana Juma","p":"Sr","b":"Enfield","r":"Teacher","s":"2025-01-11"},{"n":"Naureen Riffat","p":"Sr","b":"Edmonton","r":"Teacher","s":"2017-09-08"},{"n":"Nelima Azad","p":"Sr","b":"Slough","r":"Deputy Amir","s":"2016-09-01"},{"n":"Nohan Sarfarazi","p":"Br","b":"Slough","r":"Amir","s":"2016-10-01"},{"n":"Numirah Hassan","p":"Sr","b":"Edmonton","r":"Teacher","s":"2022-09-03"},{"n":"Nusrat Ahmed","p":"Sr","b":"Enfield","r":"Teacher","s":"2026-04-26"},{"n":"Omer Samdani","p":"Br","b":"Finchley","r":"Lead Admin","s":"2016-01-15"},{"n":"Raed Eifan","p":"Br","b":"Enfield","r":"Admin","s":"2025-03-22"},{"n":"Rayaan Kaderia","p":"Br","b":"Enfield","r":"Teacher","s":"2023-09-02"},{"n":"Riyad Islam","p":"Br","b":"Edmonton","r":"Admin","s":"2021-09-04"},{"n":"Riyad Uddin","p":"Br","b":"Enfield","r":"Teacher","s":"2022-11-05"},{"n":"Ruzeequa Abdhul Hameed","p":"Sr","b":"Finchley","r":"Teacher","s":"2018-09-22"},{"n":"Saadath Ali","p":"Sr","b":"Edmonton","r":"Teacher","s":"2021-09-04"},{"n":"Salsabeel Qamar","p":"Sr","b":"Slough","r":"Teacher","s":"2026-03-28"},{"n":"Samiha Hai","p":"Sr","b":"Harlow","r":"Teacher","s":"2024-09-14"},{"n":"Samira Ahmed","p":"Sr","b":"Enfield","r":"Teacher","s":"2022-01-23"},{"n":"Sana Ali","p":"Sr","b":"Edmonton","r":"Teacher","s":"2025-11-01"},{"n":"Seena Hussain","p":"Br","b":"Finchley","r":"Teacher","s":"2016-01-08"},{"n":"Sofiean Hussain","p":"Br","b":"Finchley","r":"Deputy Amir","s":"2010-09-01"},{"n":"Sophia Ganee","p":"Sr","b":"Enfield","r":"Teacher","s":"2026-09-05"},{"n":"Sufyaan Kaderia","p":"Br","b":"Enfield","r":"Teacher","s":"2025-11-01"},{"n":"Sulayman Azad","p":"Br","b":"Slough","r":"Teacher","s":"2025-11-01"},{"n":"Sumayyah Ahmed","p":"Sr","b":"Enfield","r":"Teacher","s":"2022-09-03"},{"n":"Sumayyah Khan","p":"Sr","b":"Harlow","r":"Teacher","s":"2025-09-06"},{"n":"Syed Ali","p":"Br","b":"Edmonton","r":"Teacher","s":"2023-09-09"},{"n":"Tanzim Khan","p":"Sr","b":"Finchley","r":"Teacher","s":"2015-09-28"},{"n":"Tasnia Hussin","p":"Sr","b":"Edmonton","r":"Teacher","s":"2022-09-03"},{"n":"Thanisha Amin","p":"Sr","b":"Enfield","r":"Teacher","s":"2026-09-05"},{"n":"Umar Haroon","p":"Br","b":"Edmonton","r":"Teacher","s":"2013-09-01"},{"n":"Uthman Ahmed","p":"Br","b":"Harlow","r":"Teacher","s":"2025-02-15"},{"n":"Uzma Ghulam-Rabbani","p":"Sr","b":"Edmonton","r":"Teacher","s":"2008-01-09"},{"n":"Waliur Rahman","p":"Br","b":"Harlow","r":"Deputy Amir","s":"2004-07-01"},{"n":"Yasmeen Umar","p":"Sr","b":"Edmonton","r":"Teacher","s":"2000-08-01"},{"n":"Yousra Rahman","p":"Sr","b":"Slough","r":"Teacher","s":"2026-09-05"},{"n":"Zaid Tarapuri","p":"Br","b":"","r":"Support Staff","s":"2013-08-02"},{"n":"Zainab Abdhul Hameed","p":"Sr","b":"Finchley","r":"Teacher","s":"2022-09-17"},{"n":"Zainab Hassan","p":"Sr","b":"Harlow","r":"Teacher","s":"2016-09-17"},{"n":"Zakariya Kajee","p":"Br","b":"Enfield","r":"Deputy Amir","s":"2012-09-01"},{"n":"Zaki Iqbal","p":"Br","b":"Harlow","r":"Admin","s":"2026-05-17"},{"n":"Zoha Malik","p":"Sr","b":"Slough","r":"Teacher","s":"2025-09-06"},{"n":"Zohora Ahmed","p":"Sr","b":"Edmonton","r":"Teacher","s":"2019-09-07"}];
 const EMP_ROLES = ["Teacher","Support Staff"], REV_ROLES = ["Amir","Deputy Amir","Executive Head"];
 function staffFor(roles){ const a=STAFF.filter(x=>roles.includes(x.r)), b=STAFF.filter(x=>!roles.includes(x.r)); return a.concat(b); }
 function matches(item,q){ const words=item.n.toLowerCase().split(/[\s-]+/); return q.toLowerCase().split(/\s+/).filter(Boolean).every(t=>words.some(w=>w.startsWith(t))); }
@@ -613,8 +722,41 @@ function fillFrom(x){ const done=[];
   if(x.s){ put("startDate",x.s); done.push("start date"); S.autoEnd=addWeeks(x.s,12); put("endDate",S.autoEnd); }
   save(); renderDates(); renderWarn();
   if(done.length) setStatus(`Filled in ${done.join(", ").replace(/, ([^,]*)$/," and $1")} from the Staff Database. Check they're right.`,"ok"); }
-function boot(){ AREAS=pickAreas(); bindFields(); renderKind(); renderMail(); renderDates(); renderAreas(); renderScores(); renderObjs(); renderStage(); resetUI(); setupCombo("empName",EMP_ROLES,fillFrom); setupCombo("reviewer",REV_ROLES,null,true); pads.sigMgr.size(); pads.sigEmp.size(); }
+function boot(){ AREAS=pickAreas(); bindFields(); bindExtras(); renderKind(); renderMail(); renderDates(); renderAreas(); renderScores(); renderObjs(); renderStage(); resetUI(); setupCombo("empName",EMP_ROLES,fillFrom); setupCombo("reviewer",REV_ROLES,null,true); pads.sigMgr.size(); pads.sigEmp.size(); }
 const d=load(); if(d){ S=Object.assign(fresh(),d); }
 boot(); if(d) setStatus("Picked up your review where you left off.","ok");
+};
+</script>
+
+<script>
+/* Staff list is encrypted with the form password (PBKDF2-SHA256 + AES-GCM). */
+(() => {
+const BLOB = {"s": "kIM2N0tNc3pcuKlyD7eyRA==", "i": "1UIy6t3WoYsqraX1", "c": "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", "n": 600000};
+const KEY = "teacher-review-pw";
+const u8 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function decrypt(pw){
+  const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pw), "PBKDF2", false, ["deriveKey"]);
+  const key = await crypto.subtle.deriveKey({name:"PBKDF2", salt:u8(BLOB.s), iterations:BLOB.n, hash:"SHA-256"}, base, {name:"AES-GCM", length:256}, false, ["decrypt"]);
+  const pt = await crypto.subtle.decrypt({name:"AES-GCM", iv:u8(BLOB.i)}, key, u8(BLOB.c));
+  return JSON.parse(new TextDecoder().decode(pt));
+}
+const lock = document.getElementById("lock"), form = document.getElementById("lockForm"),
+      pw = document.getElementById("lockPw"), btn = document.getElementById("lockBtn"), msg = document.getElementById("lockMsg");
+async function open(p, quiet){
+  btn.disabled = true; msg.style.color = ""; msg.textContent = quiet ? "" : "Checking…";
+  try {
+    const staff = await decrypt(p);
+    try { sessionStorage.setItem(KEY, p); } catch(e){}
+    lock.hidden = true;
+    window.__startApp(staff);
+  } catch(e){
+    try { sessionStorage.removeItem(KEY); } catch(_){}
+    msg.textContent = quiet ? "" : "That password isn't right. Try again.";
+    pw.value = ""; pw.focus();
+  } finally { btn.disabled = false; }
+}
+form.addEventListener("submit", e => { e.preventDefault(); if (pw.value) open(pw.value, false); });
+let saved = null; try { saved = sessionStorage.getItem(KEY); } catch(e){}
+if (saved) open(saved, true);
 })();
 </script>
